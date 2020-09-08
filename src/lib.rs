@@ -6,3 +6,4 @@ mod tests {
     }
 }
 
+mod board;
