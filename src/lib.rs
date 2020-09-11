@@ -8,3 +8,7 @@ mod tests {
 
 mod board;
 mod pieces;
+pub enum Color {
+    White,
+    Black,
+}
