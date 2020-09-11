@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod tests;
 
 pub enum Kind {
     King,
