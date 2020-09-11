@@ -15,3 +15,7 @@ pub enum Color {
     White,
     Black,
 }
+
+struct Move(Point, bool);
+
+
