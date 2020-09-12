@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-mod moves;
+pub mod moves;
 pub enum Kind {
     King,
     Queen,
