@@ -76,6 +76,16 @@ fn test_move_to_occupied_by_other_color() {
             has_moved: true,
         })
     );
+
+    assert!(
+        board.graveyard.get(Color::Black).contains(
+            &Piece {
+                color: Color::Black,
+                kind: Kind::Pawn,
+                has_moved: true,
+            }
+        )
+    );
 }
 
 #[test]
