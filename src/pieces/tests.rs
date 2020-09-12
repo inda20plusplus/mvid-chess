@@ -1,5 +1,4 @@
 use super::*;
-use crate::{Color};
 
 #[test]
 fn test_new_piece() {
