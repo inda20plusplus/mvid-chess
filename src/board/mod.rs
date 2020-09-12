@@ -6,6 +6,7 @@ use std::collections::HashMap;
 
 pub struct Board {
     current: HashMap<Point, Piece>,
+    graveyard: HashMap<Color, Vec<Piece>>,
 }
 
 impl Board {
@@ -38,6 +39,9 @@ impl Board {
         let starting_board: HashMap<Point, Piece> = starting_positions.into_iter().collect();
         Board {
             current: starting_board,
+            graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
+                .into_iter()
+                .collect(),
         }
     }
 }
