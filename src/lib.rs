@@ -8,6 +8,4 @@ pub enum Color {
     Black,
 }
 
-struct Move(Point, bool);
-
-
+pub struct Move(Point, bool);
