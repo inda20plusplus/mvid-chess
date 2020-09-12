@@ -1,12 +1,17 @@
 use super::{Board, Color, Kind, Piece, Point};
 
-#[test]
-fn test_move_to_empty_and_sets_has_moved() {
-    let mut board = Board {
-        current: vec![(Point(1, 1), Piece::new(Color::White, Kind::Rook))]
+fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
+    Board {
+        current: positions.into_iter().collect(),
+        graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
             .into_iter()
             .collect(),
-    };
+    }
+}
+
+#[test]
+fn test_move_to_empty_and_sets_has_moved() {
+    let mut board = create_test_board(vec![(Point(1, 1), Piece::new(Color::White, Kind::Rook))]);
 
     let result: bool = board.move_piece(Point(1, 1), Point(2, 1));
 
@@ -24,14 +29,10 @@ fn test_move_to_empty_and_sets_has_moved() {
 
 #[test]
 fn test_move_to_occupied_by_same_color() {
-    let mut board = Board {
-        current: vec![
-            (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
-            (Point(2, 1), Piece::new(Color::White, Kind::Pawn)),
-        ]
-        .into_iter()
-        .collect(),
-    };
+    let mut board = create_test_board(vec![
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(2, 1), Piece::new(Color::White, Kind::Pawn)),
+    ]);
 
     let result: bool = board.move_piece(Point(1, 1), Point(2, 1));
 
@@ -56,14 +57,10 @@ fn test_move_to_occupied_by_same_color() {
 
 #[test]
 fn test_move_to_occupied_by_other_color() {
-    let mut board = Board {
-        current: vec![
-            (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
-            (Point(2, 1), Piece::new(Color::Black, Kind::Pawn)),
-        ]
-        .into_iter()
-        .collect(),
-    };
+    let mut board = create_test_board(vec![
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(2, 1), Piece::new(Color::Black, Kind::Pawn)),
+    ]);
 
     let result: bool = board.move_piece(Point(1, 1), Point(2, 1));
 
@@ -90,11 +87,7 @@ fn test_move_to_occupied_by_other_color() {
 
 #[test]
 fn test_move_out_of_bounds() {
-    let mut board = Board {
-        current: vec![(Point(1, 1), Piece::new(Color::White, Kind::Rook))]
-            .into_iter()
-            .collect(),
-    };
+    let mut board = create_test_board(vec![(Point(1, 1), Piece::new(Color::White, Kind::Rook))]);
 
     assert!(!board.move_piece(Point(1, 1), Point(0, 1)));
     assert!(!board.move_piece(Point(1, 1), Point(1, 0)));
