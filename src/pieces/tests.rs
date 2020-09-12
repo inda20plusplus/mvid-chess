@@ -1,5 +1,5 @@
 use super::*;
-use crate::{Point};
+use crate::Point;
 
 #[test]
 fn test_new_piece() {
