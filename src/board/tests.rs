@@ -94,3 +94,11 @@ fn test_move_out_of_bounds() {
     assert!(!board.move_piece(Point(1, 1), Point(9, 1)));
     assert!(!board.move_piece(Point(1, 1), Point(1, 9)));
 }
+
+#[test]
+fn test_move_nonexistent_piece() {
+    let mut board = create_test_board(vec![]);
+    
+    assert!(!board.move_piece(Point(1, 1), Point(2, 1)));
+}
+
