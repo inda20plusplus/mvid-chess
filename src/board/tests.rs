@@ -102,3 +102,9 @@ fn test_move_nonexistent_piece() {
     assert!(!board.move_piece(Point(1, 1), Point(2, 1)));
 }
 
+#[test]
+fn test_move_to_source() {
+    let mut board = create_test_board(vec![(Point(1, 1), Piece::new(Color::White, Kind::Rook))]);
+
+    assert!(!board.move_piece(Point(1, 1), Point(1, 1)));
+}
