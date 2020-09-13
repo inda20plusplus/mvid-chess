@@ -47,31 +47,30 @@ impl Board {
 
     fn move_piece(&mut self, source: Point, target: Point) -> bool {
         if !(1..=8).contains(&target.0) || !(1..=8).contains(&target.1) {
-            return false
+            return false;
         } else if source == target {
-            return false
+            return false;
         }
 
         let source_piece_ref = match self.current.get(&source) {
             Some(piece) => piece,
             None => return false,
         };
-        
+
         if let Some(target_piece_ref) = self.current.get(&target) {
             if target_piece_ref.color == source_piece_ref.color {
-                return false
+                return false;
             } else {
                 let target_piece = self.current.remove(&target).unwrap();
                 let graveyard = self.graveyard.entry(target_piece.color).or_default();
                 graveyard.push(target_piece);
             }
         }
-        
+
         let mut source_piece = self.current.remove(&source).unwrap();
         source_piece.has_moved = true;
 
         self.current.insert(target, source_piece);
-
 
         true
     }
