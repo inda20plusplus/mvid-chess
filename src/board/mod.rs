@@ -1,3 +1,4 @@
+#[cfg(test)]
 mod test_move_piece;
 
 use crate::pieces::{Kind, Piece};
