@@ -1,4 +1,7 @@
 #[cfg(test)]
+pub mod test_setup;
+
+#[cfg(test)]
 mod test_move_piece;
 
 #[cfg(test)]
