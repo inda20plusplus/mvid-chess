@@ -1,4 +1,5 @@
 use super::{Board, Color, Kind, Piece, Point};
+use std::collections::HashMap;
 
 fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
     Board {
@@ -86,6 +87,21 @@ fn test_move_to_occupied_by_other_color() {
 }
 
 #[test]
+fn test_move_to_occupied_by_other_color_empty_graveyard() {
+    let mut board = create_test_board(vec![
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(2, 1), Piece::new(Color::Black, Kind::Pawn)),
+    ]);
+
+    board.graveyard = HashMap::new();
+
+    board.move_piece(Point(1,1), Point(2,1));
+
+    assert!(board.graveyard.contains_key(&Color::Black));
+    assert!(!board.graveyard.contains_key(&Color::White));
+}
+
+#[test]
 fn test_move_out_of_bounds() {
     let mut board = create_test_board(vec![(Point(1, 1), Piece::new(Color::White, Kind::Rook))]);
 
@@ -108,3 +124,4 @@ fn test_move_to_source() {
 
     assert!(!board.move_piece(Point(1, 1), Point(1, 1)));
 }
+
