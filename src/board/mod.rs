@@ -69,7 +69,7 @@ impl Board {
                 return false;
             } else {
                 let target_piece = self.current.remove(&target).unwrap();
-                let graveyard = self.graveyard.entry(target_piece.color).or_default();
+                let graveyard = self.graveyard.entry(target_piece.color.clone()).or_default();
                 graveyard.push(target_piece);
             }
         }

@@ -4,7 +4,7 @@ mod pieces;
 #[derive(Clone, Hash, Eq, PartialEq, Debug)]
 struct Point(i8, i8);
 
-#[derive(Hash, Eq, PartialEq, Debug)]
+#[derive(Clone, Hash, Eq, PartialEq, Debug)]
 pub enum Color {
     White,
     Black,
