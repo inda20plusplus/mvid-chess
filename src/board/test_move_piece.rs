@@ -95,7 +95,7 @@ fn test_move_to_occupied_by_other_color_empty_graveyard() {
 
     board.graveyard = HashMap::new();
 
-    board.move_piece(Point(1,1), Point(2,1));
+    board.move_piece(Point(1, 1), Point(2, 1));
 
     assert!(board.graveyard.contains_key(&Color::Black));
     assert!(!board.graveyard.contains_key(&Color::White));
@@ -114,7 +114,7 @@ fn test_move_out_of_bounds() {
 #[test]
 fn test_move_nonexistent_piece() {
     let mut board = create_test_board(vec![]);
-    
+
     assert!(!board.move_piece(Point(1, 1), Point(2, 1)));
 }
 
@@ -124,4 +124,3 @@ fn test_move_to_source() {
 
     assert!(!board.move_piece(Point(1, 1), Point(1, 1)));
 }
-

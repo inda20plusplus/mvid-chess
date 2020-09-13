@@ -1,4 +1,4 @@
-mod tests;
+mod test_move_piece;
 
 use crate::pieces::{Kind, Piece};
 use crate::{Color, Point};
