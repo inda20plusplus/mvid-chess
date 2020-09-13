@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod test_move_piece;
 
+#[cfg(test)]
+mod test_get_moves;
+
 use crate::pieces::{Kind, Piece};
 use crate::{Color, Point};
 use std::collections::HashMap;
