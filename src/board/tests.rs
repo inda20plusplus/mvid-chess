@@ -81,7 +81,7 @@ fn test_move_to_occupied_by_other_color() {
         .contains(&Piece {
             color: Color::Black,
             kind: Kind::Pawn,
-            has_moved: true,
+            has_moved: false,
         }));
 }
 
