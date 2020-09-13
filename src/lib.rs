@@ -1,7 +1,7 @@
 mod board;
 mod pieces;
 
-#[derive(Clone, Hash, Eq, PartialEq, Debug)]
+#[derive(Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
 struct Point(i8, i8);
 
 #[derive(Clone, Hash, Eq, PartialEq, Debug)]
