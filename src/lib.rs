@@ -30,8 +30,8 @@ mod tests {
             Point(4, 5)
         );
         assert_eq!(
-            Point(3, 3).add(&Point(-1, -1)),
-            Point(2, 2)
+            Point(3, 3).add(&Point(-2, -1)),
+            Point(1, 2)
         );
     }
 }
