@@ -173,3 +173,26 @@ fn test_pawn_has_not_moved() {
         vec![Point(1, 6), Point(1, 5)].sort()
     );
 }
+
+#[test]
+fn test_cannot_unblock_king() {
+    let mut board = create_test_board(vec![
+        (Point(5, 1), Piece::new(Color::White, Kind::King)),
+        (Point(5, 2), Piece::new(Color::White, Kind::Rook)),
+        (Point(6, 2), Piece::new(Color::White, Kind::Knight)),
+        (Point(5, 3), Piece::new(Color::Black, Kind::Rook)),
+        (Point(7, 3), Piece::new(Color::Black, Kind::Bishop)),
+    ]);
+    board.king_pos.insert(Color::White, Point(5, 1));
+
+    assert_eq!(
+        board.get_moves(Point(5, 2)),
+        vec![Point(5, 3)]
+    );
+
+    assert_eq!(
+        board.get_moves(Point(6, 2)),
+        vec![]
+    );
+
+}
