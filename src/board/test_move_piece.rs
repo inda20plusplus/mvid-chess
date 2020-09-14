@@ -116,3 +116,19 @@ fn test_move_to_source() {
 
     assert!(!board.move_piece(Point(1, 1), Point(1, 1)));
 }
+
+#[test]
+fn test_set_king_position() {
+    let mut board = create_test_board(vec![
+        (Point(5, 5), Piece::new(Color::White, Kind::King)),
+        (Point(7, 7), Piece::new(Color::Black, Kind::King)),
+    ]);
+    board.king_pos.insert(Color::White, Point(5, 5));
+    board.king_pos.insert(Color::Black, Point(7, 7));
+
+    board.move_piece(Point(5, 5), Point(6, 4));
+    board.move_piece(Point(7, 7), Point(8, 6));
+
+    assert_eq!(board.king_pos.get(&Color::White), &Point(6, 4));
+    assert_eq!(board.king_pos.get(&Color::Black), &Point(8, 6));
+}
