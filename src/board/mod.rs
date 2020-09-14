@@ -14,6 +14,7 @@ use std::collections::HashMap;
 pub struct Board {
     pub current: HashMap<Point, Piece>,
     pub graveyard: HashMap<Color, Vec<Piece>>,
+    pub king_pos: HashMap<Color, Point>,
 }
 
 impl Board {
@@ -49,6 +50,7 @@ impl Board {
             graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
                 .into_iter()
                 .collect(),
+            king_pos: vec![(Color::White, Point(5, 1)), (Color::Black, Point(5, 8))]
         }
     }
 
