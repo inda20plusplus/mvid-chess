@@ -57,7 +57,7 @@ fn test_completely_blocked() {
         (Point(3, 2), Piece::new(Color::White, Kind::Pawn)),
     ]);
 
-    let possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
+    let possible_moves: Vec<Point> = board.get_moves(Point(3, 3));
 
     assert_eq!(possible_moves, vec![])
 }
