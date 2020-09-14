@@ -7,6 +7,8 @@ pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
         graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
             .into_iter()
             .collect(),
-        king_pos: HashMap::new(),
+        king_pos: vec![(Color::White, Point(100, 100)), (Color::Black, Point(-100, -100))]
+            .into_iter()
+            .collect(),
     }
 }
