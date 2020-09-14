@@ -110,7 +110,7 @@ fn test_pawn_normal_movement() {
     ]);
 
     assert_eq!(board.get_moves(Point(1, 3)), vec![Point(1, 4)]);
-    assert_eq!(board.get_moves(Point(8, 6)), vec![Point(7, 6)]);
+    assert_eq!(board.get_moves(Point(8, 6)), vec![Point(8, 5)]);
 }
 
 #[test]
