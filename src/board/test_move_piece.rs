@@ -129,6 +129,6 @@ fn test_set_king_position() {
     board.move_piece(Point(5, 5), Point(6, 4));
     board.move_piece(Point(7, 7), Point(8, 6));
 
-    assert_eq!(board.king_pos.get(&Color::White), &Point(6, 4));
-    assert_eq!(board.king_pos.get(&Color::Black), &Point(8, 6));
+    assert_eq!(board.king_pos.get(&Color::White).unwrap(), &Point(6, 4));
+    assert_eq!(board.king_pos.get(&Color::Black).unwrap(), &Point(8, 6));
 }
