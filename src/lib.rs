@@ -8,6 +8,40 @@ impl Point {
     pub fn add(&self, other: &Point) -> Point {
         Point(self.0 + other.0, self.1 + other.1)
     }
+
+    pub fn relative_direction(&self, other: &Point) -> Option<Point> {
+        if self.0 == other.0 {
+            if self.1 < other.1 {
+                Some(Point(0, 1))
+            } else if self.1 > other.1 {
+                Some(Point(0, -1))
+            } else {
+                None
+            }
+        } else if self.1 == other.1 {
+            if self.0 < other.0 {
+                Some(Point(1, 0))
+            } else if self.0 > other.0 {
+                Some(Point(-1, 0))
+            } else {
+                None
+            }
+        } else if (other.0 - self.0) == (other.1 - self.1) {
+            if (other.0 - self.0).is_positive() {
+                Some(Point(1, 1))
+            } else {
+                Some(Point(-1, -1))
+            }
+        } else if (other.0 - self.0) == !(other.1 - self.1) {
+            if (other.0 - self.0).is_positive() {
+                Some(Point(1, -1))
+            } else {
+                Some(Point(-1, 1))
+            }
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Clone, Hash, Eq, PartialEq, Debug)]
