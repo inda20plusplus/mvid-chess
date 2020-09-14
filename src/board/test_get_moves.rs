@@ -155,3 +155,21 @@ fn test_pawn_capture() {
         vec![Point(2, 3), Point(3, 3)].sort()
     )
 }
+
+#[test]
+fn test_pawn_has_not_moved() {
+    let mut board = create_test_board(vec![
+        (Point(1, 2), Piece::new(Color::White, Kind::Pawn)),
+        (Point(1, 7), Piece::new(Color::Black, Kind::Pawn)),
+    ]);
+
+    assert_eq!(
+        board.get_moves(Point(1, 2)).sort(),
+        vec![Point(1, 3), Point(1, 4)].sort()
+    );
+
+    assert_eq!(
+        board.get_moves(Point(1, 7)).sort(),
+        vec![Point(1, 6), Point(1, 5)].sort()
+    );
+}
