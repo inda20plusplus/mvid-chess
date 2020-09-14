@@ -3,9 +3,9 @@ use super::{Color, Kind, Piece, Point};
 
 #[test]
 fn test_free_movement() {
-    let mut board = create_test_board(vec![(Point(3, 2), Piece::new(Color::White, Kind::Rook))]);
+    let board = create_test_board(vec![(Point(3, 2), Piece::new(Color::White, Kind::Rook))]);
 
-    let possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
+    let mut possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
 
     assert_eq!(
         possible_moves.sort(),
@@ -31,7 +31,7 @@ fn test_free_movement() {
 
 #[test]
 fn test_movement_blocked_by_same_color() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(3, 3), Piece::new(Color::White, Kind::Rook)),
         (Point(5, 3), Piece::new(Color::White, Kind::Pawn)),
         (Point(1, 3), Piece::new(Color::White, Kind::Pawn)),
@@ -39,7 +39,7 @@ fn test_movement_blocked_by_same_color() {
         (Point(3, 1), Piece::new(Color::White, Kind::Pawn)),
     ]);
 
-    let possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
+    let mut possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
 
     assert_eq!(
         possible_moves.sort(),
@@ -49,7 +49,7 @@ fn test_movement_blocked_by_same_color() {
 
 #[test]
 fn test_completely_blocked() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(3, 3), Piece::new(Color::White, Kind::Rook)),
         (Point(4, 3), Piece::new(Color::White, Kind::Pawn)),
         (Point(2, 3), Piece::new(Color::White, Kind::Pawn)),
@@ -57,14 +57,14 @@ fn test_completely_blocked() {
         (Point(3, 2), Piece::new(Color::White, Kind::Pawn)),
     ]);
 
-    let possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
+    let mut possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
 
     assert_eq!(possible_moves, vec![])
 }
 
 #[test]
 fn test_blocked_by_opponent() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(3, 3), Piece::new(Color::White, Kind::Rook)),
         (Point(5, 3), Piece::new(Color::Black, Kind::Pawn)),
         (Point(2, 3), Piece::new(Color::Black, Kind::Pawn)),
@@ -72,7 +72,7 @@ fn test_blocked_by_opponent() {
         (Point(3, 2), Piece::new(Color::Black, Kind::Pawn)),
     ]);
 
-    let possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
+    let mut possible_moves: Vec<Point> = board.get_moves(Point(3, 2));
 
     assert_eq!(
         possible_moves.sort(),
@@ -90,7 +90,7 @@ fn test_blocked_by_opponent() {
 
 #[test]
 fn test_pawn_normal_movement() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (
             Point(1, 3),
             Piece {
@@ -115,7 +115,7 @@ fn test_pawn_normal_movement() {
 
 #[test]
 fn test_pawn_capture() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (
             Point(3, 3),
             Piece {
@@ -158,7 +158,7 @@ fn test_pawn_capture() {
 
 #[test]
 fn test_pawn_has_not_moved() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(1, 2), Piece::new(Color::White, Kind::Pawn)),
         (Point(1, 7), Piece::new(Color::Black, Kind::Pawn)),
     ]);
