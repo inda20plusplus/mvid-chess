@@ -21,7 +21,7 @@ impl Piece {
         }
     }
 
-    fn get_moves(&self) -> Vec<Move> {
+    pub fn get_moves(&self) -> Vec<Move> {
         match self.kind {
             Kind::King => moves::KING.to_vec(),
             Kind::Queen => moves::QUEEN.to_vec(),
