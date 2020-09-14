@@ -81,6 +81,10 @@ impl Board {
         let mut source_piece = self.current.remove(&source).unwrap();
         source_piece.has_moved = true;
 
+        if source_piece.kind == Kind::King {
+            self.king_pos.insert(source_piece.color.clone(), target.clone());
+        };
+
         self.current.insert(target, source_piece);
 
         true
