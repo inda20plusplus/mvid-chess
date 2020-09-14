@@ -23,6 +23,7 @@ pub struct Move(Point, bool);
 mod tests {
     use super::Point;
 
+    #[test]
     fn test_point_addition() {
         assert_eq!(
             Point(3, 3).add(&Point(1, 2)),
