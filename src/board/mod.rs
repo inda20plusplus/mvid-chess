@@ -51,6 +51,8 @@ impl Board {
                 .into_iter()
                 .collect(),
             king_pos: vec![(Color::White, Point(5, 1)), (Color::Black, Point(5, 8))]
+                .into_iter()
+                .collect(),
         }
     }
 
