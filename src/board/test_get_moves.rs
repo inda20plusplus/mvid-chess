@@ -1,5 +1,5 @@
 use super::test_setup::create_test_board;
-use super::{Board, Color, Kind, Piece, Point};
+use super::{Color, Kind, Piece, Point};
 
 #[test]
 fn test_free_movement() {
