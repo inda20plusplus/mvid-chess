@@ -12,12 +12,12 @@ use crate::{Color, Point};
 use std::collections::HashMap;
 
 pub struct Board {
-    current: HashMap<Point, Piece>,
-    graveyard: HashMap<Color, Vec<Piece>>,
+    pub current: HashMap<Point, Piece>,
+    pub graveyard: HashMap<Color, Vec<Piece>>,
 }
 
 impl Board {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let mut starting_positions: Vec<(Point, Piece)> = vec![
             (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
             (Point(2, 1), Piece::new(Color::White, Kind::Knight)),
@@ -52,7 +52,7 @@ impl Board {
         }
     }
 
-    fn move_piece(&mut self, source: Point, target: Point) -> bool {
+    pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
         if !(1..=8).contains(&target.0) || !(1..=8).contains(&target.1) {
             return false;
         } else if source == target {
