@@ -2,10 +2,10 @@ mod board;
 mod pieces;
 
 #[derive(Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
-struct Point(i8, i8);
+pub struct Point(i8, i8);
 
 impl Point {
-    fn add(&self, other: &Point) -> Point {
+    pub fn add(&self, other: &Point) -> Point {
         Point(self.0 + other.0, self.1 + other.1)
     }
 }
