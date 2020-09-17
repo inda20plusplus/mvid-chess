@@ -44,6 +44,18 @@ impl Point {
     }
 }
 
+trait Sorted {
+    fn as_sorted(&mut self) -> Self;
+}
+
+impl Sorted for Vec<Point> {
+    fn as_sorted(&mut self) -> Self {
+        let mut clone = self.clone();
+        clone.sort();
+        clone
+    }
+}
+
 #[derive(Clone, Hash, Eq, PartialEq, Debug)]
 pub enum Color {
     White,
