@@ -8,15 +8,15 @@ mod test_move_piece;
 mod test_get_moves;
 
 use crate::pieces::{Kind, Piece};
-use crate::{Color, Point};
+use crate::*;
 use std::collections::HashMap;
 
 pub struct Board {
     pub current: HashMap<Point, Piece>,
     pub graveyard: HashMap<Color, Vec<Piece>>,
     pub king_pos: HashMap<Color, Point>,
-    pub height: std::ops::RangeInclusive<i8>, 
-    pub width: std::ops::RangeInclusive<i8>, 
+    pub height: std::ops::RangeInclusive<i8>,
+    pub width: std::ops::RangeInclusive<i8>,
 }
 
 impl Board {
@@ -77,7 +77,10 @@ impl Board {
                 return false;
             } else {
                 let target_piece = self.current.remove(&target).unwrap();
-                let graveyard = self.graveyard.entry(target_piece.color.clone()).or_default();
+                let graveyard = self
+                    .graveyard
+                    .entry(target_piece.color.clone())
+                    .or_default();
                 graveyard.push(target_piece);
             }
         }
@@ -86,7 +89,8 @@ impl Board {
         source_piece.has_moved = true;
 
         if source_piece.kind == Kind::King {
-            self.king_pos.insert(source_piece.color.clone(), target.clone());
+            self.king_pos
+                .insert(source_piece.color.clone(), target.clone());
         };
 
         self.current.insert(target, source_piece);
@@ -97,7 +101,7 @@ impl Board {
     pub fn get_moves(&self, source: Point) -> Vec<Point> {
         let piece = match self.current.get(&source) {
             Some(p) => p,
-            None => return vec![]
+            None => return vec![],
         };
 
         let mut moves: Vec<Point>;
@@ -109,7 +113,6 @@ impl Board {
         }
 
         if piece.kind == Kind::King {
-
         } else {
             if let Some(allowed_moves) = self.check_if_protecting_king(&source, &piece.color) {
                 moves.retain(|point| allowed_moves.contains(&point));
@@ -128,35 +131,37 @@ impl Board {
             loop {
                 passed_points.push(current_position.clone());
                 if !self.current.contains_key(&current_position) {
-                    if !self.width.contains(&current_position.0) || !self.height.contains(&current_position.1) {
-                        return None
+                    if !self.width.contains(&current_position.0)
+                        || !self.height.contains(&current_position.1)
+                    {
+                        return None;
                     } else {
                         current_position = current_position.add(&direction);
-                        continue
+                        continue;
                     };
                 } else {
                     let target_piece = self.current.get(&current_position).unwrap();
                     if &target_piece.color == color {
-                        return None
+                        return None;
                     } else {
                         if direction.0 == 0 || direction.1 == 0 {
                             if [Kind::Queen, Kind::Rook].contains(&target_piece.kind) {
-                                return Some(passed_points)
+                                return Some(passed_points);
                             } else {
-                                return None
+                                return None;
                             };
                         } else {
                             if [Kind::Queen, Kind::Bishop].contains(&target_piece.kind) {
-                                return Some(passed_points)
+                                return Some(passed_points);
                             } else {
-                                return None
+                                return None;
                             };
                         };
                     };
                 };
-            };
+            }
         } else {
-            return None
+            return None;
         };
     }
 
@@ -168,7 +173,7 @@ impl Board {
 
         let direction = match piece.color {
             Color::White => Point(0, 1),
-            Color::Black => Point(0, -1)
+            Color::Black => Point(0, -1),
         };
 
         let mut moves: Vec<Point> = vec![];
@@ -189,7 +194,11 @@ impl Board {
             };
         };
 
-        if !piece.has_moved && !self.current.contains_key(&source.add(&direction).add(&direction)) {
+        if !piece.has_moved
+            && !self
+                .current
+                .contains_key(&source.add(&direction).add(&direction))
+        {
             moves.push(source.add(&direction).add(&direction));
         };
 
@@ -203,13 +212,15 @@ impl Board {
         };
 
         let mut moves: Vec<Point> = vec![];
-        
+
         for mv in piece.get_moves() {
             let mut current_point = source.add(&mv.0);
             loop {
                 if !self.current.contains_key(&current_point) {
-                    if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
-                        break
+                    if !self.width.contains(&current_point.0)
+                        || !self.height.contains(&current_point.1)
+                    {
+                        break;
                     }
                     moves.push(current_point.clone());
                 } else {
@@ -217,13 +228,13 @@ impl Board {
                     if target_piece.color != piece.color {
                         moves.push(current_point);
                     }
-                    break
+                    break;
                 }
 
                 if mv.1 {
                     current_point = current_point.add(&mv.0);
                 } else {
-                    break
+                    break;
                 };
             }
         }
