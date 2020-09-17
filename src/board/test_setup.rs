@@ -1,4 +1,4 @@
-use super::{Board, Color, Piece, Point};
+use super::*;
 use std::collections::HashMap;
 
 pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
