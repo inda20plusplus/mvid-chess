@@ -15,6 +15,8 @@ pub struct Board {
     pub current: HashMap<Point, Piece>,
     pub graveyard: HashMap<Color, Vec<Piece>>,
     pub king_pos: HashMap<Color, Point>,
+    pub height: std::ops::RangeInclusive<i8>, 
+    pub width: std::ops::RangeInclusive<i8>, 
 }
 
 impl Board {
@@ -53,11 +55,13 @@ impl Board {
             king_pos: vec![(Color::White, Point(5, 1)), (Color::Black, Point(5, 8))]
                 .into_iter()
                 .collect(),
+            height: (1..=8),
+            width: (1..=8),
         }
     }
 
     pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
-        if !(1..=8).contains(&target.0) || !(1..=8).contains(&target.1) {
+        if !self.width.contains(&target.0) || !self.height.contains(&target.1) {
             return false;
         } else if source == target {
             return false;
@@ -124,7 +128,7 @@ impl Board {
             loop {
                 passed_points.push(current_position.clone());
                 if !self.current.contains_key(&current_position) {
-                    if !(1..=8).contains(&current_position.0) || !(1..=8).contains(&current_position.1) {
+                    if !self.width.contains(&current_position.0) || !self.height.contains(&current_position.1) {
                         return None
                     } else {
                         current_position = current_position.add(&direction);
@@ -204,7 +208,7 @@ impl Board {
             let mut current_point = source.add(&mv.0);
             loop {
                 if !self.current.contains_key(&current_point) {
-                    if !(1..=8).contains(&current_point.0) || !(1..=8).contains(&current_point.1) {
+                    if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
                         break
                     }
                     moves.push(current_point.clone());

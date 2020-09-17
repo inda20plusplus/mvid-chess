@@ -10,5 +10,7 @@ pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
         king_pos: vec![(Color::White, Point(100, 100)), (Color::Black, Point(-100, -100))]
             .into_iter()
             .collect(),
+        height: (1..=8),
+        width: (1..=8),
     }
 }
