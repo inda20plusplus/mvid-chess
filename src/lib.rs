@@ -71,14 +71,7 @@ mod tests {
 
     #[test]
     fn test_point_addition() {
-        assert_eq!(
-            Point(3, 3).add(&Point(1, 2)),
-            Point(4, 5)
-        );
-        assert_eq!(
-            Point(3, 3).add(&Point(-2, -1)),
-            Point(1, 2)
-        );
+        assert_eq!(Point(3, 3).add(&Point(1, 2)), Point(4, 5));
+        assert_eq!(Point(3, 3).add(&Point(-2, -1)), Point(1, 2));
     }
 }
-
