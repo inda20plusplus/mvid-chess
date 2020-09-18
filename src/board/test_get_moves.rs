@@ -173,14 +173,39 @@ fn test_pawn_has_not_moved() {
 fn test_cannot_unblock_king() {
     let mut board = create_test_board(vec![
         (Point(5, 1), Piece::new(Color::White, Kind::King)),
-        (Point(5, 2), Piece::new(Color::White, Kind::Rook)),
+        (Point(4, 2), Piece::new(Color::White, Kind::Pawn)),
+        (Point(3, 3), Piece::new(Color::White, Kind::Knight)),
+        (Point(2, 4), Piece::new(Color::Black, Kind::Bishop)),
+        (Point(5, 3), Piece::new(Color::White, Kind::Rook)),
+        (Point(5, 5), Piece::new(Color::Black, Kind::Rook)),
         (Point(6, 2), Piece::new(Color::White, Kind::Knight)),
-        (Point(5, 3), Piece::new(Color::Black, Kind::Rook)),
         (Point(7, 3), Piece::new(Color::Black, Kind::Bishop)),
     ]);
     board.king_pos.insert(Color::White, Point(5, 1));
 
-    assert_eq!(board.get_moves(Point(5, 2)), vec![Point(5, 3)]);
+    assert_eq!(
+        board.get_moves(Point(5, 3)).as_sorted(),
+        vec![Point(5, 2), Point(5, 4), Point(5, 5)].as_sorted()
+    );
+
+    assert_eq!(
+        board.get_moves(Point(3, 3)).as_sorted(),
+        vec![
+            Point(4, 5),
+            Point(5, 4),
+            Point(5, 2),
+            Point(4, 1),
+            Point(2, 1),
+            Point(1, 2),
+            Point(1, 4),
+            Point(2, 5)
+        ].as_sorted()
+    );
+
+    assert_eq!(
+        board.get_moves(Point(4, 2)).as_sorted(),
+        vec![Point(4, 3), Point(4, 5)].as_sorted()
+    );
 
     assert_eq!(board.get_moves(Point(6, 2)), vec![]);
 }
