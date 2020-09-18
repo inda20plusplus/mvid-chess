@@ -110,16 +110,89 @@ impl Board {
             moves = self.get_moves_for_pawn(&source);
         } else {
             moves = self.get_moves_for_piece(&source);
-        }
+        };
 
         if piece.kind == Kind::King {
+            let mut allowed_moves: Vec<Point> = vec![];
+            for mv in moves.clone() {
+                if !self.covered_by_opponent(&mv, &piece.color) {
+                    allowed_moves.push(mv.clone());
+                };
+            };
+            moves.retain(|point| allowed_moves.contains(&point));
         } else {
             if let Some(allowed_moves) = self.check_if_protecting_king(&source, &piece.color) {
                 moves.retain(|point| allowed_moves.contains(&point));
-            }
+            };
         };
 
         moves
+    }
+
+    fn covered_by_opponent(&self, source: &Point, color: &Color) -> bool {
+        let opponent = match color {
+            Color::White => Color::Black,
+            Color::Black => Color::White,
+        };
+
+        let straight_directions: [Point; 4] = [
+            Point(1, 0),
+            Point(0, 1),
+            Point(-1, 0),
+            Point(0, -1),
+        ];
+
+        let diagonal_directions: [Point; 4] = [
+            Point(1, 1),
+            Point(-1, 1),
+            Point(-1, -1),
+            Point(1, -1),
+        ];
+
+        for direction in straight_directions.into_iter() {
+            if let Some(piece) = self.current.get(&source.add(&direction)) {
+                if piece.kind == Kind::King && piece.color == opponent {
+                    return true;
+                };
+            }
+            if let Some(_) = self.raytrace_for_kinds(&source, direction, &opponent, vec![Kind::Queen, Kind::Rook]) {
+                return true;
+            };
+        };
+
+        for direction in diagonal_directions.into_iter() {
+            if let Some(piece) = self.current.get(&source.add(&direction)) {
+                if piece.kind == Kind::King && piece.color == opponent {
+                    return true;
+                };
+            };
+            if let Some(_) = self.raytrace_for_kinds(&source, direction, &opponent, vec![Kind::Queen, Kind::Bishop]) {
+                return true;
+            };
+        };
+        
+        let knight_moves = Piece::new(color.clone(), Kind::Knight).get_moves();
+        for mv in knight_moves.into_iter() {
+            if let Some(piece) = self.current.get(&source.add(&mv.0)) {
+                if piece.kind == Kind::Knight && piece.color == opponent {
+                    return true;
+                };
+            };
+        };
+
+        let possible_pawn_pos: [Point; 2] = match opponent {
+            Color::White => [Point(-1, -1), Point(1, -1)],
+            Color::Black => [Point(-1, 1), Point(1, 1)]
+        };
+        for pos in possible_pawn_pos.into_iter() {
+            if let Some(piece) = self.current.get(&source.add(&pos)) {
+                if piece.kind == Kind::Pawn && piece.color == opponent {
+                    return true;
+                };
+            };
+        };
+        
+        false
     }
 
     fn raytrace_for_kinds(&self, source: &Point, direction: &Point, color: &Color, kinds: Vec<Kind>) -> Option<Point> {
