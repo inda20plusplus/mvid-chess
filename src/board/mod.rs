@@ -141,7 +141,7 @@ impl Board {
         let diagonal_directions: [Point; 4] =
             [Point(1, 1), Point(-1, 1), Point(-1, -1), Point(1, -1)];
 
-        for direction in straight_directions.into_iter() {
+        for direction in straight_directions.iter() {
             if let Some(piece) = self.current.get(&source.add(&direction)) {
                 if piece.kind == Kind::King && piece.color == opponent {
                     return true;
@@ -157,7 +157,7 @@ impl Board {
             };
         }
 
-        for direction in diagonal_directions.into_iter() {
+        for direction in diagonal_directions.iter() {
             if let Some(piece) = self.current.get(&source.add(&direction)) {
                 if piece.kind == Kind::King && piece.color == opponent {
                     return true;
@@ -174,7 +174,7 @@ impl Board {
         }
 
         let knight_moves = Piece::new(color.clone(), Kind::Knight).get_moves();
-        for mv in knight_moves.into_iter() {
+        for mv in knight_moves.iter() {
             if let Some(piece) = self.current.get(&source.add(&mv.0)) {
                 if piece.kind == Kind::Knight && piece.color == opponent {
                     return true;
@@ -186,7 +186,7 @@ impl Board {
             Color::White => [Point(-1, -1), Point(1, -1)],
             Color::Black => [Point(-1, 1), Point(1, 1)],
         };
-        for pos in possible_pawn_pos.into_iter() {
+        for pos in possible_pawn_pos.iter() {
             if let Some(piece) = self.current.get(&source.add(&pos)) {
                 if piece.kind == Kind::Pawn && piece.color == opponent {
                     return true;
