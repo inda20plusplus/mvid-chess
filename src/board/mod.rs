@@ -118,7 +118,7 @@ impl Board {
                 if !self.covered_by_opponent(&mv, &piece.color) {
                     allowed_moves.push(mv.clone());
                 };
-            };
+            }
             moves.retain(|point| allowed_moves.contains(&point));
         } else {
             if let Some(allowed_moves) = self.check_if_protecting_king(&source, &piece.color) {
@@ -135,19 +135,11 @@ impl Board {
             Color::Black => Color::White,
         };
 
-        let straight_directions: [Point; 4] = [
-            Point(1, 0),
-            Point(0, 1),
-            Point(-1, 0),
-            Point(0, -1),
-        ];
+        let straight_directions: [Point; 4] =
+            [Point(1, 0), Point(0, 1), Point(-1, 0), Point(0, -1)];
 
-        let diagonal_directions: [Point; 4] = [
-            Point(1, 1),
-            Point(-1, 1),
-            Point(-1, -1),
-            Point(1, -1),
-        ];
+        let diagonal_directions: [Point; 4] =
+            [Point(1, 1), Point(-1, 1), Point(-1, -1), Point(1, -1)];
 
         for direction in straight_directions.into_iter() {
             if let Some(piece) = self.current.get(&source.add(&direction)) {
@@ -155,10 +147,15 @@ impl Board {
                     return true;
                 };
             }
-            if let Some(_) = self.raytrace_for_kinds(&source, direction, &opponent, vec![Kind::Queen, Kind::Rook]) {
+            if let Some(_) = self.raytrace_for_kinds(
+                &source,
+                direction,
+                &opponent,
+                vec![Kind::Queen, Kind::Rook],
+            ) {
                 return true;
             };
-        };
+        }
 
         for direction in diagonal_directions.into_iter() {
             if let Some(piece) = self.current.get(&source.add(&direction)) {
@@ -166,11 +163,16 @@ impl Board {
                     return true;
                 };
             };
-            if let Some(_) = self.raytrace_for_kinds(&source, direction, &opponent, vec![Kind::Queen, Kind::Bishop]) {
+            if let Some(_) = self.raytrace_for_kinds(
+                &source,
+                direction,
+                &opponent,
+                vec![Kind::Queen, Kind::Bishop],
+            ) {
                 return true;
             };
-        };
-        
+        }
+
         let knight_moves = Piece::new(color.clone(), Kind::Knight).get_moves();
         for mv in knight_moves.into_iter() {
             if let Some(piece) = self.current.get(&source.add(&mv.0)) {
@@ -178,11 +180,11 @@ impl Board {
                     return true;
                 };
             };
-        };
+        }
 
         let possible_pawn_pos: [Point; 2] = match opponent {
             Color::White => [Point(-1, -1), Point(1, -1)],
-            Color::Black => [Point(-1, 1), Point(1, 1)]
+            Color::Black => [Point(-1, 1), Point(1, 1)],
         };
         for pos in possible_pawn_pos.into_iter() {
             if let Some(piece) = self.current.get(&source.add(&pos)) {
@@ -190,13 +192,19 @@ impl Board {
                     return true;
                 };
             };
-        };
-        
+        }
+
         false
     }
 
-    fn raytrace_for_kinds(&self, source: &Point, direction: &Point, color: &Color, kinds: Vec<Kind>) -> Option<Point> {
-        let mut current_point = source.clone().add(&direction);         
+    fn raytrace_for_kinds(
+        &self,
+        source: &Point,
+        direction: &Point,
+        color: &Color,
+        kinds: Vec<Kind>,
+    ) -> Option<Point> {
+        let mut current_point = source.clone().add(&direction);
 
         loop {
             if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
@@ -206,13 +214,13 @@ impl Board {
                     if kinds.contains(&target_piece.kind) && &target_piece.color == color {
                         return Some(current_point);
                     } else {
-                        break
+                        break;
                     };
                 };
             };
             println!("{:?}\n{:?}", &current_point, &direction);
             current_point = current_point.add(&direction);
-        };
+        }
         None
     }
 
