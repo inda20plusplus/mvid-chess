@@ -1,5 +1,6 @@
 mod board;
 mod pieces;
+mod game;
 
 #[derive(Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
 pub struct Point(i8, i8);
