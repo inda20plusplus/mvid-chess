@@ -1,8 +1,15 @@
 #[cfg(test)]
 mod tests;
 
-use crate::board::Board;
 use crate::*;
+
+cfg_if::cfg_if! {
+    if #[cfg(test)] {
+        use crate::board::MockBoard as Board;
+    } else {
+        use crate::board::Board;
+    }
+}
 
 pub enum EndResult {
     Win(Color),
