@@ -153,7 +153,7 @@ impl Board {
                 &source,
                 direction,
                 &opponent,
-                vec![Kind::Queen, Kind::Rook],
+                Some(vec![Kind::Queen, Kind::Rook]),
             ) {
                 return true;
             };
@@ -169,7 +169,7 @@ impl Board {
                 &source,
                 direction,
                 &opponent,
-                vec![Kind::Queen, Kind::Bishop],
+                Some(vec![Kind::Queen, Kind::Bishop]),
             ) {
                 return true;
             };
@@ -204,9 +204,20 @@ impl Board {
         source: &Point,
         direction: &Point,
         color: &Color,
-        kinds: Vec<Kind>,
+        kinds: Option<Vec<Kind>>,
     ) -> Option<Point> {
         let mut current_point = source.clone().add(&direction);
+        let kinds = match kinds {
+            Some(vec) => vec,
+            None => vec![
+                Kind::Bishop,
+                Kind::King,
+                Kind::Knight,
+                Kind::Pawn,
+                Kind::Queen,
+                Kind::Rook,
+            ]
+        };
 
         loop {
             if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
