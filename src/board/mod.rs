@@ -67,7 +67,7 @@ impl Board {
     }
 
     pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
-        if !self.width.contains(&target.0) || !self.height.contains(&target.1) {
+        if !self.is_in_bounds(&target) {
             return false;
         } else if source == target {
             return false;
@@ -224,7 +224,7 @@ impl Board {
         };
 
         loop {
-            if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
+            if !self.is_in_bounds(&current_point) {
                 break None;
             } else {
                 if let Some(target_piece) = self.current.get(&current_point) {
@@ -277,7 +277,7 @@ impl Board {
                         if current_point == target_point {
                             break Some(blocking_points);
                         }
-                        if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
+                        if !self.is_in_bounds(&current_point) {
                             panic!("Went out of bounds while checking if piece protects king")
                         }
                     }
@@ -342,9 +342,7 @@ impl Board {
             let mut current_point = source.add(&mv.0);
             loop {
                 if !self.current.contains_key(&current_point) {
-                    if !self.width.contains(&current_point.0)
-                        || !self.height.contains(&current_point.1)
-                    {
+                    if !self.is_in_bounds(&current_point){
                         break;
                     }
                     moves.push(current_point.clone());
