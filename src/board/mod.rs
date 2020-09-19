@@ -220,7 +220,6 @@ impl Board {
                     };
                 };
             };
-            println!("{:?}\n{:?}", &current_point, &direction);
             current_point = current_point.add(&direction);
         }
     }
