@@ -204,7 +204,7 @@ fn test_cannot_unblock_king() {
 
     assert_eq!(
         board.get_moves(Point(4, 2)).as_sorted(),
-        vec![Point(4, 3), Point(4, 5)].as_sorted()
+        vec![Point(4, 3), Point(4, 4)].as_sorted()
     );
 
     assert_eq!(board.get_moves(Point(6, 2)), vec![]);
