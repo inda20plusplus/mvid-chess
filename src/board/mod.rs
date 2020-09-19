@@ -235,47 +235,55 @@ impl Board {
         }
     }
 
-    fn check_if_protecting_king(&self, source: &Point, color: &Color) -> Option<Vec<Point>> {
-        let king = self.king_pos.get(&color).unwrap();
+    fn check_if_protecting_king(&self, source: &Point) -> Option<Vec<Point>> {
+        let source_piece = match self.current.get(&source) {
+            Some(piece) => piece,
+            None => return None
+        };
+        let king = self.king_pos.get(&source_piece.color).unwrap().clone();
 
         if let Some(direction) = king.relative_direction(&source) {
-            let mut current_position = source.add(&direction);
-            let mut passed_points: Vec<Point> = vec![];
-            loop {
-                passed_points.push(current_position.clone());
-                if !self.current.contains_key(&current_position) {
-                    if !self.width.contains(&current_position.0)
-                        || !self.height.contains(&current_position.1)
-                    {
-                        return None;
+            // Check if source is the first piece in this direction
+            let is_first_piece: bool = match self.raytrace_for_kinds(&king, &direction, &source_piece.color, None) {
+                Some(point) => {
+                    if &point == source {
+                        true
                     } else {
-                        current_position = current_position.add(&direction);
-                        continue;
-                    };
+                        false
+                    }
+                }
+                None => false
+            };
+            
+            if !is_first_piece {
+                None
+            } else {
+                let kinds = if direction.0 == 0 || direction.1 == 0 {
+                    Some(vec![Kind::Queen, Kind::Rook])
                 } else {
-                    let target_piece = self.current.get(&current_position).unwrap();
-                    if &target_piece.color == color {
-                        return None;
-                    } else {
-                        if direction.0 == 0 || direction.1 == 0 {
-                            if [Kind::Queen, Kind::Rook].contains(&target_piece.kind) {
-                                return Some(passed_points);
-                            } else {
-                                return None;
-                            };
-                        } else {
-                            if [Kind::Queen, Kind::Bishop].contains(&target_piece.kind) {
-                                return Some(passed_points);
-                            } else {
-                                return None;
-                            };
-                        };
-                    };
+                    Some(vec![Kind::Queen, Kind::Bishop])
                 };
+
+                if let Some(target_point) = self.raytrace_for_kinds(&source, &direction, &source_piece.color.inverse(), kinds) {
+                    let mut blocking_points: Vec<Point> = vec![];
+                    let mut current_point = king;
+                    loop {
+                        current_point = current_point.add(&direction);
+                        blocking_points.push(current_point.clone());
+                        if current_point == target_point {
+                            break Some(blocking_points);
+                        }
+                        if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
+                            panic!("Went out of bounds while checking if piece protects king")
+                        }
+                    }
+                } else {
+                    None
+                }
             }
         } else {
-            return None;
-        };
+            None
+        }
     }
 
     fn get_moves_for_pawn(&self, source: &Point) -> Vec<Point> {
