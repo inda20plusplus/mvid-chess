@@ -62,6 +62,10 @@ impl Board {
         }
     }
 
+    pub fn is_in_bounds(&self, point: &Point) -> bool {
+        self.width.contains(&point.0) || self.height.contains(&point.1)
+    }
+
     pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
         if !self.width.contains(&target.0) || !self.height.contains(&target.1) {
             return false;
