@@ -123,7 +123,7 @@ impl Board {
             }
             moves.retain(|point| allowed_moves.contains(&point));
         } else {
-            if let Some(allowed_moves) = self.check_if_protecting_king(&source, &piece.color) {
+            if let Some(allowed_moves) = self.check_if_protecting_king(&source) {
                 moves.retain(|point| allowed_moves.contains(&point));
             };
         };
