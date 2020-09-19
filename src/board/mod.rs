@@ -10,6 +10,7 @@ mod test_get_moves;
 use crate::pieces::{Kind, Piece};
 use crate::*;
 use std::collections::HashMap;
+use mockall::automock;
 
 pub struct Board {
     pub current: HashMap<Point, Piece>,
@@ -19,6 +20,7 @@ pub struct Board {
     pub width: std::ops::RangeInclusive<i8>,
 }
 
+#[automock]
 impl Board {
     pub fn new() -> Self {
         let mut starting_positions: Vec<(Point, Piece)> = vec![
