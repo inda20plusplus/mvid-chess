@@ -63,6 +63,15 @@ pub enum Color {
     Black,
 }
 
+impl Color {
+    fn inverse(&self) -> Self {
+        match self {
+            Color::White => Color::Black,
+            Color::Black => Color::White
+        }
+    }
+}
+
 #[derive(Clone, PartialEq, Debug)]
 pub struct Move(Point, bool);
 
