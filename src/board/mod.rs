@@ -210,20 +210,19 @@ impl Board {
 
         loop {
             if !self.width.contains(&current_point.0) || !self.height.contains(&current_point.1) {
-                break;
+                break None;
             } else {
                 if let Some(target_piece) = self.current.get(&current_point) {
                     if kinds.contains(&target_piece.kind) && &target_piece.color == color {
-                        return Some(current_point);
+                        break Some(current_point);
                     } else {
-                        break;
+                        break None;
                     };
                 };
             };
             println!("{:?}\n{:?}", &current_point, &direction);
             current_point = current_point.add(&direction);
         }
-        None
     }
 
     fn check_if_protecting_king(&self, source: &Point, color: &Color) -> Option<Vec<Point>> {
