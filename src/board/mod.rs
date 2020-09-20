@@ -82,6 +82,30 @@ impl Board {
         None
     }
 
+    fn covered_by_opponent(&self, source: &Point, color: &Color) -> Vec<Point> {
+        let opponent: Color = color.inverse();
+
+        let mut covering_pieces: Vec<Point> = vec![];
+
+        for mv in pieces::moves::ALL.iter() {
+            let mut current_point: Point = source.clone().add(&mv.0);
+
+            while self.is_in_bounds(&current_point) {
+                if self.get_moves(&current_point).contains(&source) {
+                    covering_pieces.push(current_point.clone());
+                }
+
+                if mv.1 {
+                    current_point = current_point.add(&mv.0);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        covering_pieces
+    }
+
     fn raytrace_for_kinds(
         &self,
         source: &Point,
@@ -186,31 +210,6 @@ impl Board {
 
         moves
     }
-
-    fn covered_by_opponent(&self, source: &Point, color: &Color) -> Vec<Point> {
-        let opponent: Color = color.inverse();
-
-        let mut covering_pieces: Vec<Point> = vec![];
-
-        for mv in pieces::moves::ALL.iter() {
-            let mut current_point: Point = source.clone().add(&mv.0);
-
-            while self.is_in_bounds(&current_point) {
-                if self.get_moves(&current_point).contains(&source) {
-                    covering_pieces.push(current_point.clone());
-                }
-
-                if mv.1 {
-                    current_point = current_point.add(&mv.0);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        covering_pieces
-    }
-
 
     fn check_if_protecting_king(&self, source: &Point) -> Option<Vec<Point>> {
         let source_piece = match self.current.get(&source) {
