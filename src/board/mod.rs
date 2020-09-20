@@ -1,5 +1,5 @@
 #[cfg(test)]
-pub mod test_setup;
+pub mod tests;
 
 #[cfg(test)]
 mod test_move_piece;
