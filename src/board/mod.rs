@@ -136,10 +136,7 @@ impl Board {
     }
 
     fn covered_by_opponent(&self, source: &Point, color: &Color) -> bool {
-        let opponent = match color {
-            Color::White => Color::Black,
-            Color::Black => Color::White,
-        };
+        let opponent: Color = color.inverse();
 
         let straight_directions: [Point; 4] =
             [Point(1, 0), Point(0, 1), Point(-1, 0), Point(0, -1)];
