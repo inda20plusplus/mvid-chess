@@ -25,7 +25,7 @@ pub enum TurnResult {
 
 pub struct Game {
     pub board: Board,
-    pub turn: Color,
+    pub color: Color,
     pub checked: Option<Vec<Point>>,
 }
 
@@ -33,12 +33,12 @@ impl Game {
     pub fn new() -> Self {
         Game {
             board: Board::new(),
-            turn: Color::White,
+            color: Color::White,
             checked: None,
         }
     }
 
-    pub fn turn(&self, source: Point, target: Point) -> TurnResult {
+    pub fn turn(&mut self, source: Point, target: Point) -> TurnResult {
         // Check if move is valid, return TurnResult::Failed
         // Make move
         // Set turn to opposing player
