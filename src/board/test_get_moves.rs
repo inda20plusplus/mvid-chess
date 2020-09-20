@@ -227,3 +227,24 @@ fn test_king_cannot_move_to_danger() {
 
     assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
 }
+
+#[test]
+fn test_detect_check() {
+    let mut board = create_test_board(vec![
+        (Point(4, 4), Piece::new(Color::White, Kind::King)),
+        (Point(3, 4), Piece::new(Color::White, Kind::Rook)),
+        (Point(2, 4), Piece::new(Color::Black, Kind::Rook)),
+        (Point(7, 4), Piece::new(Color::Black, Kind::Rook)),
+        (Point(5, 5), Piece::new(Color::Black, Kind::Pawn)),
+        (Point(5, 3), Piece::new(Color::Black, Kind::Pawn)),
+        (Point(2, 6), Piece::new(Color::Black, Kind::Bishop)),
+        (Point(4, 6), Piece::new(Color::Black, Kind::Bishop)),
+        (Point(7, 7), Piece::new(Color::Black, Kind::Bishop)),
+        (Point(6, 5), Piece::new(Color::Black, Kind::Knight)),
+    ]);
+
+    assert_eq!(
+        board.detect_check(&Color::White).unwrap().as_sorted(),
+        vec![Point(2, 6), Point(5, 5), Point(6, 5), Point(7, 4)].as_sorted()
+    );
+}
