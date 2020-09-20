@@ -354,4 +354,8 @@ impl Board {
 
         moves
     }
+
+    fn detect_check(&self, color: &Color) -> Option<Vec<Point>> {
+        None
+    }
 }
