@@ -79,7 +79,15 @@ impl Board {
     }
 
     pub fn detect_check(&self, color: &Color) -> Option<Vec<Point>> {
-        None
+        let king = self.find_king(&color);
+
+        let points: Vec<Point> = self.covered_by_opponent(&king, &color);
+
+        if points.len() > 0 {
+            Some(points)
+        } else {
+            None
+        }
     }
 
     fn covered_by_opponent(&self, source: &Point, color: &Color) -> Vec<Point> {
