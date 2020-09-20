@@ -334,11 +334,9 @@ impl Board {
 
         for mv in piece.get_moves() {
             let mut current_point = source.add(&mv.0);
-            loop {
+
+            while self.is_in_bounds(&current_point) {
                 if !self.current.contains_key(&current_point) {
-                    if !self.is_in_bounds(&current_point) {
-                        break;
-                    }
                     moves.push(current_point.clone());
                 } else {
                     let target_piece = self.current.get(&current_point).unwrap();
