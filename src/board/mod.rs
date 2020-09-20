@@ -178,19 +178,13 @@ impl Board {
         true
     }
 
-    pub fn get_moves(&self, source: &Point) -> Vec<Point> {
+    pub fn get_allowed_moves(&self, source: &Point) -> Vec<Point> {
         let piece = match self.current.get(&source) {
             Some(p) => p,
             None => return vec![],
         };
 
-        let mut moves: Vec<Point>;
-
-        if piece.kind == Kind::Pawn {
-            moves = self.get_moves_for_pawn(&source);
-        } else {
-            moves = self.get_moves_for_piece(&source);
-        };
+        let mut moves: Vec<Point> = self.get_moves_for_piece(&source);
 
         if piece.kind == Kind::King {
             let mut allowed_moves: Vec<Point> = vec![];
@@ -306,7 +300,7 @@ impl Board {
     fn get_moves_for_piece(&self, source: &Point) -> Vec<Point> {
         let piece = self.current.get(&source).unwrap();
         if piece.kind == Kind::Pawn {
-            panic!("Piece cannot be of type Pawn");
+            return self.get_moves_for_pawn(&source);
         };
 
         let mut moves: Vec<Point> = vec![];
