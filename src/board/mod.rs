@@ -77,6 +77,49 @@ impl Board {
         };
         panic!("Couldn't find king");
     }
+
+    pub fn detect_check(&self, color: &Color) -> Option<Vec<Point>> {
+        None
+    }
+
+    fn raytrace_for_kinds(
+        &self,
+        source: &Point,
+        direction: &Point,
+        color: &Color,
+        kinds: Option<Vec<Kind>>,
+    ) -> Option<Point> {
+        let mut current_point = source.clone().add(&direction);
+
+        let kinds = match kinds {
+            Some(vec) => vec,
+            None => vec![
+                Kind::Bishop,
+                Kind::King,
+                Kind::Knight,
+                Kind::Pawn,
+                Kind::Queen,
+                Kind::Rook,
+            ],
+        };
+
+        loop {
+            if !self.is_in_bounds(&current_point) {
+                break None;
+            } else {
+                if let Some(target_piece) = self.current.get(&current_point) {
+                    if kinds.contains(&target_piece.kind) && &target_piece.color == color {
+                        break Some(current_point);
+                    } else {
+                        break None;
+                    };
+                };
+            };
+
+            current_point = current_point.add(&direction);
+        }
+    }
+
     pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
         if !self.is_in_bounds(&target) {
             return false;
@@ -196,43 +239,6 @@ impl Board {
         false
     }
 
-    fn raytrace_for_kinds(
-        &self,
-        source: &Point,
-        direction: &Point,
-        color: &Color,
-        kinds: Option<Vec<Kind>>,
-    ) -> Option<Point> {
-        let mut current_point = source.clone().add(&direction);
-
-        let kinds = match kinds {
-            Some(vec) => vec,
-            None => vec![
-                Kind::Bishop,
-                Kind::King,
-                Kind::Knight,
-                Kind::Pawn,
-                Kind::Queen,
-                Kind::Rook,
-            ],
-        };
-
-        loop {
-            if !self.is_in_bounds(&current_point) {
-                break None;
-            } else {
-                if let Some(target_piece) = self.current.get(&current_point) {
-                    if kinds.contains(&target_piece.kind) && &target_piece.color == color {
-                        break Some(current_point);
-                    } else {
-                        break None;
-                    };
-                };
-            };
-
-            current_point = current_point.add(&direction);
-        }
-    }
 
     fn check_if_protecting_king(&self, source: &Point) -> Option<Vec<Point>> {
         let source_piece = match self.current.get(&source) {
@@ -359,7 +365,4 @@ impl Board {
         moves
     }
 
-    fn detect_check(&self, color: &Color) -> Option<Vec<Point>> {
-        None
-    }
 }
