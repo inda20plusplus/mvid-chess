@@ -91,8 +91,12 @@ impl Board {
             let mut current_point: Point = source.clone().add(&mv.0);
 
             while self.is_in_bounds(&current_point) {
-                if self.get_moves(&current_point).contains(&source) {
-                    covering_pieces.push(current_point.clone());
+                if let Some(piece) = self.current.get(&current_point) {
+                    if piece.color == opponent {
+                       if self.get_moves_for_piece(&current_point).contains(&source) {
+                            covering_pieces.push(current_point.clone());
+                        }
+                    }
                 }
 
                 if mv.1 {
