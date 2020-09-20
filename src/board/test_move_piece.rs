@@ -1,4 +1,4 @@
-use super::test_setup::create_test_board;
+use super::tests::create_test_board;
 use super::{Color, Kind, Piece, Point};
 use std::collections::HashMap;
 
