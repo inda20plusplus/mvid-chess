@@ -154,7 +154,7 @@ impl Board {
         true
     }
 
-    pub fn get_moves(&self, source: Point) -> Vec<Point> {
+    pub fn get_moves(&self, source: &Point) -> Vec<Point> {
         let piece = match self.current.get(&source) {
             Some(p) => p,
             None => return vec![],
