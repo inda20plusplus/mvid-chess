@@ -241,9 +241,7 @@ impl Board {
             // Check if source is the first piece in this direction
             let is_first_piece: bool =
                 match self.raytrace_for_kinds(&king, &direction, &source_piece.color, None) {
-                    Some(point) => {
-                        if &point == source {true} else {false}
-                    }
+                    Some(point) => &point == source,
                     None => false,
                 };
 
