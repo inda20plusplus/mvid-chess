@@ -144,36 +144,22 @@ impl Board {
         let diagonal_directions: [Point; 4] =
             [Point(1, 1), Point(-1, 1), Point(-1, -1), Point(1, -1)];
 
-        for direction in straight_directions.iter() {
+        for direction in straight_directions.iter().chain(diagonal_directions.iter()) {
             if let Some(piece) = self.current.get(&source.add(&direction)) {
                 if piece.kind == Kind::King && piece.color == opponent {
                     return true;
                 };
             }
-            if let Some(_) = self.raytrace_for_kinds(
-                &source,
-                direction,
-                &opponent,
-                Some(vec![Kind::Queen, Kind::Rook]),
-            ) {
-                return true;
-            };
-        }
 
-        for direction in diagonal_directions.iter() {
-            if let Some(piece) = self.current.get(&source.add(&direction)) {
-                if piece.kind == Kind::King && piece.color == opponent {
-                    return true;
-                };
+            let kinds: Option<Vec<Kind>> = if straight_directions.contains(&direction) {
+                Some(vec![Kind::Queen, Kind::Rook])
+            } else {
+                Some(vec![Kind::Queen, Kind::Bishop])
             };
-            if let Some(_) = self.raytrace_for_kinds(
-                &source,
-                direction,
-                &opponent,
-                Some(vec![Kind::Queen, Kind::Bishop]),
-            ) {
+
+            if let Some(_) = self.raytrace_for_kinds(&source, direction, &opponent, kinds) {
                 return true;
-            };
+            }
         }
 
         let knight_moves = Piece::new(color.clone(), Kind::Knight).get_moves();
