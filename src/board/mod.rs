@@ -15,7 +15,6 @@ use std::collections::HashMap;
 pub struct Board {
     pub current: HashMap<Point, Piece>,
     pub graveyard: HashMap<Color, Vec<Piece>>,
-    pub king_pos: HashMap<Color, Point>,
     pub height: std::ops::RangeInclusive<i8>,
     pub width: std::ops::RangeInclusive<i8>,
 }
@@ -56,9 +55,6 @@ impl Board {
             graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
                 .into_iter()
                 .collect(),
-            king_pos: vec![(Color::White, Point(5, 1)), (Color::Black, Point(5, 8))]
-                .into_iter()
-                .collect(),
             height: (1..=8),
             width: (1..=8),
         }
@@ -68,6 +64,19 @@ impl Board {
         self.width.contains(&point.0) && self.height.contains(&point.1)
     }
 
+    fn find_king(&self, color: &Color) -> Point {
+        for x in self.width.clone() {
+            for y in self.height.clone() {
+                let current_point = Point(x, y);
+                if let Some(piece) = self.current.get(&current_point) {
+                    if piece.kind == Kind::King && &piece.color == color{
+                        return current_point;
+                    }
+                }
+            }
+        };
+        panic!("Couldn't find king");
+    }
     pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
         if !self.is_in_bounds(&target) {
             return false;
@@ -96,11 +105,6 @@ impl Board {
         let mut source_piece = self.current.remove(&source).unwrap();
 
         source_piece.has_moved = true;
-
-        if source_piece.kind == Kind::King {
-            self.king_pos
-                .insert(source_piece.color.clone(), target.clone());
-        };
 
         self.current.insert(target, source_piece);
 
@@ -235,7 +239,7 @@ impl Board {
             Some(piece) => piece,
             None => return None,
         };
-        let king = self.king_pos.get(&source_piece.color).unwrap().clone();
+        let king = self.find_king(&source_piece.color);
 
         if let Some(direction) = king.relative_direction(&source) {
             // Check if source is the first piece in this direction
