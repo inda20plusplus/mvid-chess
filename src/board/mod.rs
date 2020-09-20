@@ -194,7 +194,7 @@ impl Board {
             let mut allowed_moves: Vec<Point> = vec![];
 
             for mv in moves.clone() {
-                if self.covered_by_opponent(&mv, &piece.color).len() > 0 {
+                if self.covered_by_opponent(&mv, &piece.color).len() == 0 {
                     allowed_moves.push(mv.clone());
                 };
             }
