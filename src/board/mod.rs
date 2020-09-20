@@ -172,7 +172,7 @@ impl Board {
             let mut allowed_moves: Vec<Point> = vec![];
 
             for mv in moves.clone() {
-                if !self.covered_by_opponent(&mv, &piece.color) {
+                if self.covered_by_opponent(&mv, &piece.color).len() > 0 {
                     allowed_moves.push(mv.clone());
                 };
             }
@@ -187,56 +187,28 @@ impl Board {
         moves
     }
 
-    fn covered_by_opponent(&self, source: &Point, color: &Color) -> bool {
+    fn covered_by_opponent(&self, source: &Point, color: &Color) -> Vec<Point> {
         let opponent: Color = color.inverse();
 
-        let straight_directions: [Point; 4] =
-            [Point(1, 0), Point(0, 1), Point(-1, 0), Point(0, -1)];
+        let mut covering_pieces: Vec<Point> = vec![];
 
-        let diagonal_directions: [Point; 4] =
-            [Point(1, 1), Point(-1, 1), Point(-1, -1), Point(1, -1)];
+        for mv in pieces::moves::ALL.iter() {
+            let mut current_point: Point = source.clone().add(&mv.0);
 
-        for direction in straight_directions.iter().chain(diagonal_directions.iter()) {
-            if let Some(piece) = self.current.get(&source.add(&direction)) {
-                if piece.kind == Kind::King && piece.color == opponent {
-                    return true;
-                };
-            }
+            while self.is_in_bounds(&current_point) {
+                if self.get_moves(&current_point).contains(&source) {
+                    covering_pieces.push(current_point.clone());
+                }
 
-            let kinds: Option<Vec<Kind>> = if straight_directions.contains(&direction) {
-                Some(vec![Kind::Queen, Kind::Rook])
-            } else {
-                Some(vec![Kind::Queen, Kind::Bishop])
-            };
-
-            if let Some(_) = self.raytrace_for_kinds(&source, direction, &opponent, kinds) {
-                return true;
+                if mv.1 {
+                    current_point = current_point.add(&mv.0);
+                } else {
+                    break;
+                }
             }
         }
 
-        let knight_moves = Piece::new(color.clone(), Kind::Knight).get_moves();
-        for mv in knight_moves.iter() {
-            if let Some(piece) = self.current.get(&source.add(&mv.0)) {
-                if piece.kind == Kind::Knight && piece.color == opponent {
-                    return true;
-                };
-            };
-        }
-
-        let possible_pawn_pos: [Point; 2] = match opponent {
-            Color::White => [Point(-1, -1), Point(1, -1)],
-            Color::Black => [Point(-1, 1), Point(1, 1)],
-        };
-
-        for pos in possible_pawn_pos.iter() {
-            if let Some(piece) = self.current.get(&source.add(&pos)) {
-                if piece.kind == Kind::Pawn && piece.color == opponent {
-                    return true;
-                };
-            };
-        }
-
-        false
+        covering_pieces
     }
 
 
