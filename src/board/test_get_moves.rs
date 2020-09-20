@@ -199,7 +199,8 @@ fn test_cannot_unblock_king() {
             Point(1, 2),
             Point(1, 4),
             Point(2, 5)
-        ].as_sorted()
+        ]
+        .as_sorted()
     );
 
     assert_eq!(

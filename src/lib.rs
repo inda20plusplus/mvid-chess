@@ -67,7 +67,7 @@ impl Color {
     fn inverse(&self) -> Self {
         match self {
             Color::White => Color::Black,
-            Color::Black => Color::White
+            Color::Black => Color::White,
         }
     }
 }

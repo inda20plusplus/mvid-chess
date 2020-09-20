@@ -9,8 +9,8 @@ mod test_get_moves;
 
 use crate::pieces::{Kind, Piece};
 use crate::*;
-use std::collections::HashMap;
 use mockall::automock;
+use std::collections::HashMap;
 
 pub struct Board {
     pub current: HashMap<Point, Piece>,
@@ -41,9 +41,11 @@ impl Board {
             (Point(7, 8), Piece::new(Color::Black, Kind::Knight)),
             (Point(8, 8), Piece::new(Color::Black, Kind::Rook)),
         ];
+
         for i in 1..=8 {
             starting_positions.push((Point(i, 2), Piece::new(Color::White, Kind::Pawn)));
         }
+
         for i in 1..=8 {
             starting_positions.push((Point(i, 7), Piece::new(Color::Black, Kind::Pawn)));
         }
@@ -92,6 +94,7 @@ impl Board {
         }
 
         let mut source_piece = self.current.remove(&source).unwrap();
+
         source_piece.has_moved = true;
 
         if source_piece.kind == Kind::King {
@@ -120,11 +123,13 @@ impl Board {
 
         if piece.kind == Kind::King {
             let mut allowed_moves: Vec<Point> = vec![];
+
             for mv in moves.clone() {
                 if !self.covered_by_opponent(&mv, &piece.color) {
                     allowed_moves.push(mv.clone());
                 };
             }
+
             moves.retain(|point| allowed_moves.contains(&point));
         } else {
             if let Some(allowed_moves) = self.check_if_protecting_king(&source) {
@@ -175,6 +180,7 @@ impl Board {
             Color::White => [Point(-1, -1), Point(1, -1)],
             Color::Black => [Point(-1, 1), Point(1, 1)],
         };
+
         for pos in possible_pawn_pos.iter() {
             if let Some(piece) = self.current.get(&source.add(&pos)) {
                 if piece.kind == Kind::Pawn && piece.color == opponent {
@@ -194,6 +200,7 @@ impl Board {
         kinds: Option<Vec<Kind>>,
     ) -> Option<Point> {
         let mut current_point = source.clone().add(&direction);
+
         let kinds = match kinds {
             Some(vec) => vec,
             None => vec![
@@ -203,7 +210,7 @@ impl Board {
                 Kind::Pawn,
                 Kind::Queen,
                 Kind::Rook,
-            ]
+            ],
         };
 
         loop {
@@ -218,6 +225,7 @@ impl Board {
                     };
                 };
             };
+
             current_point = current_point.add(&direction);
         }
     }
@@ -225,33 +233,36 @@ impl Board {
     fn check_if_protecting_king(&self, source: &Point) -> Option<Vec<Point>> {
         let source_piece = match self.current.get(&source) {
             Some(piece) => piece,
-            None => return None
+            None => return None,
         };
         let king = self.king_pos.get(&source_piece.color).unwrap().clone();
 
         if let Some(direction) = king.relative_direction(&source) {
             // Check if source is the first piece in this direction
-            let is_first_piece: bool = match self.raytrace_for_kinds(&king, &direction, &source_piece.color, None) {
-                Some(point) => {
-                    if &point == source {
-                        true
-                    } else {
-                        false
+            let is_first_piece: bool =
+                match self.raytrace_for_kinds(&king, &direction, &source_piece.color, None) {
+                    Some(point) => {
+                        if &point == source {true} else {false}
                     }
-                }
-                None => false
-            };
-            
+                    None => false,
+                };
+
             if !is_first_piece {
                 None
             } else {
+                // Check if source is covering the king from an opposing piece
                 let kinds = if direction.0 == 0 || direction.1 == 0 {
                     Some(vec![Kind::Queen, Kind::Rook])
                 } else {
                     Some(vec![Kind::Queen, Kind::Bishop])
                 };
 
-                if let Some(target_point) = self.raytrace_for_kinds(&source, &direction, &source_piece.color.inverse(), kinds) {
+                if let Some(target_point) = self.raytrace_for_kinds(
+                    &source,
+                    &direction,
+                    &source_piece.color.inverse(),
+                    kinds,
+                ) {
                     let mut blocking_points: Vec<Point> = vec![];
                     let mut current_point = king;
                     loop {
@@ -325,7 +336,7 @@ impl Board {
             let mut current_point = source.add(&mv.0);
             loop {
                 if !self.current.contains_key(&current_point) {
-                    if !self.is_in_bounds(&current_point){
+                    if !self.is_in_bounds(&current_point) {
                         break;
                     }
                     moves.push(current_point.clone());

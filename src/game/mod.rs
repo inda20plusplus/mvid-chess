@@ -20,7 +20,7 @@ pub enum TurnResult {
     Moved,
     Checked,
     GameEnd(EndResult),
-    Failed
+    Failed,
 }
 
 pub struct Game {
