@@ -90,7 +90,7 @@ impl Board {
         }
     }
 
-    fn covered_by_opponent(&self, source: &Point, color: &Color) -> Vec<Point> {
+    pub fn covered_by_opponent(&self, source: &Point, color: &Color) -> Vec<Point> {
         let opponent: Color = color.inverse();
 
         let mut covering_pieces: Vec<Point> = vec![];
