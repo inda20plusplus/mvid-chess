@@ -9,7 +9,6 @@ mod test_get_moves;
 
 use crate::pieces::{Kind, Piece};
 use crate::*;
-use mockall::automock;
 use std::collections::HashMap;
 
 pub struct Board {
