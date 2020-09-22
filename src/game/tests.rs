@@ -23,6 +23,7 @@ fn test_turn_valid_move() {
     let mut game = Game {
         board: board,
         color: Color::White,
+        promotion: None,
     };
 
     assert_eq!(game.turn(Point(4, 4), Point(5, 4)), TurnResult::Moved);
@@ -41,6 +42,7 @@ fn test_failure_on_invalid_move() {
     let mut game = Game {
         board: board,
         color: Color::White,
+        promotion: None,
     };
 
     assert_eq!(game.turn(Point(4, 4), Point(5, 5)), TurnResult::Failed,);
@@ -59,6 +61,7 @@ fn test_failure_on_moving_wrong_color() {
     let mut game = Game {
         board: board,
         color: Color::Black,
+        promotion: None,
     };
 
     assert_eq!(game.turn(Point(4, 4), Point(4, 5)), TurnResult::Failed);
@@ -77,6 +80,7 @@ fn test_checks_opponent() {
     let mut game = Game {
         board: board,
         color: Color::White,
+        promotion: None,
     };
 
     assert_eq!(game.turn(Point(4, 4), Point(4, 5)), TurnResult::Checked);
@@ -98,6 +102,7 @@ fn test_check_mate() {
     let mut game = Game {
         board: board,
         color: Color::White,
+        promotion: None,
     };
 
     assert_eq!(
@@ -119,6 +124,7 @@ fn test_tie() {
     let mut game = Game {
         board: board,
         color: Color::White,
+        promotion: None,
     };
 
     assert_eq!(

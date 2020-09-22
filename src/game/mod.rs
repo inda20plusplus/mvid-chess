@@ -15,12 +15,14 @@ pub enum TurnResult {
     Moved,
     Checked,
     GameEnd(EndResult),
+    Promotion,
     Failed,
 }
 
 pub struct Game {
     pub board: Board,
     pub color: Color,
+    promotion: Option<[Point; 2]>,
 }
 
 impl Game {
@@ -28,6 +30,7 @@ impl Game {
         Game {
             board: Board::new(),
             color: Color::White,
+            promotion: None,
         }
     }
 
