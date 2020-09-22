@@ -233,7 +233,6 @@ fn test_king_cannot_move_to_danger() {
         (Point(2, 7), Piece::new(Color::Black, Kind::Bishop)),
     ]);
 
-
     assert_eq!(
         board.get_allowed_moves(&Point(4, 4)).as_sorted(),
         vec![Point(4, 3)].as_sorted()
@@ -251,10 +250,7 @@ fn test_piece_must_protect_king_when_checked() {
         (Point(7, 2), Piece::new(Color::White, Kind::Knight)),
     ]);
 
-    assert_eq!(
-        board.get_allowed_moves(&Point(5, 6)),
-        vec![Point(5, 4)]
-    );
+    assert_eq!(board.get_allowed_moves(&Point(5, 6)), vec![Point(5, 4)]);
 
     assert_eq!(
         board.get_allowed_moves(&Point(6, 6)).as_sorted(),
@@ -265,6 +261,4 @@ fn test_piece_must_protect_king_when_checked() {
         board.get_allowed_moves(&Point(7, 2)).as_sorted(),
         vec![Point(8, 4), Point(6, 4)].as_sorted()
     );
-    
 }
-

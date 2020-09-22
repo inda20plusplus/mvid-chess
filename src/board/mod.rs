@@ -68,12 +68,12 @@ impl Board {
             for y in self.height.clone() {
                 let current_point = Point(x, y);
                 if let Some(piece) = self.current.get(&current_point) {
-                    if piece.kind == Kind::King && &piece.color == color{
+                    if piece.kind == Kind::King && &piece.color == color {
                         return current_point;
                     }
                 }
             }
-        };
+        }
         panic!("Couldn't find king");
     }
 
@@ -100,7 +100,7 @@ impl Board {
             while self.is_in_bounds(&current_point) {
                 if let Some(piece) = self.current.get(&current_point) {
                     if piece.color == opponent {
-                       if self.get_moves_for_piece(&current_point).contains(&source) {
+                        if self.get_moves_for_piece(&current_point).contains(&source) {
                             covering_pieces.push(current_point.clone());
                         }
                     }
@@ -171,7 +171,6 @@ impl Board {
             };
             self.current = original.clone();
         }
-
 
         moves.retain(|point| allowed_moves.contains(&point));
 
@@ -250,5 +249,4 @@ impl Board {
 
         moves
     }
-
 }

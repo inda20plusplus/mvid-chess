@@ -40,13 +40,7 @@ fn test_find_king() {
         (Point(8, 3), Piece::new(Color::Black, Kind::King)),
     ]);
 
-    assert_eq!(
-        board.find_king(&Color::White),
-        Point(3, 8)
-    );
+    assert_eq!(board.find_king(&Color::White), Point(3, 8));
 
-    assert_eq!(
-        board.find_king(&Color::Black),
-        Point(8, 3)
-    );
+    assert_eq!(board.find_king(&Color::Black), Point(8, 3));
 }
