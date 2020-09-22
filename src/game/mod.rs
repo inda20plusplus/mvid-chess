@@ -26,7 +26,6 @@ pub enum TurnResult {
 pub struct Game {
     pub board: Board,
     pub color: Color,
-    pub checked: Option<Vec<Point>>,
 }
 
 impl Game {
@@ -34,7 +33,6 @@ impl Game {
         Game {
             board: Board::new(),
             color: Color::White,
-            checked: None,
         }
     }
 
