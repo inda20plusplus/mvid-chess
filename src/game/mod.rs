@@ -34,18 +34,15 @@ impl Game {
     pub fn turn(&mut self, source: Point, target: Point) -> TurnResult {
         if let Some(piece) = self.board.current.get(&source) {
             if piece.color != self.color {
-                println!("1");
                 return TurnResult::Failed
             };
         };
 
         if self.board.get_allowed_moves(&source).contains(&target) {
             if !self.board.move_piece(source, target) {
-                println!("2");
                 return TurnResult::Failed;
             }
         } else {
-            println!("3");
             return TurnResult::Failed;
         }
         
