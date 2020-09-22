@@ -46,11 +46,11 @@ impl Point {
 }
 
 trait Sorted {
-    fn as_sorted(&mut self) -> Self;
+    fn as_sorted(&self) -> Self;
 }
 
 impl Sorted for Vec<Point> {
-    fn as_sorted(&mut self) -> Self {
+    fn as_sorted(&self) -> Self {
         let mut clone = self.clone();
         clone.sort();
         clone

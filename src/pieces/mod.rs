@@ -5,7 +5,7 @@ mod tests;
 
 pub mod moves;
 
-#[derive(PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Piece {
     pub color: Color,
     pub kind: Kind,
@@ -33,7 +33,7 @@ impl Piece {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum Kind {
     King,
     Queen,

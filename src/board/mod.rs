@@ -118,44 +118,6 @@ impl Board {
         covering_pieces
     }
 
-    fn raytrace_for_kinds(
-        &self,
-        source: &Point,
-        direction: &Point,
-        color: &Color,
-        kinds: Option<Vec<Kind>>,
-    ) -> Option<Point> {
-        let mut current_point = source.clone().add(&direction);
-
-        let kinds = match kinds {
-            Some(vec) => vec,
-            None => vec![
-                Kind::Bishop,
-                Kind::King,
-                Kind::Knight,
-                Kind::Pawn,
-                Kind::Queen,
-                Kind::Rook,
-            ],
-        };
-
-        loop {
-            if !self.is_in_bounds(&current_point) {
-                break None;
-            } else {
-                if let Some(target_piece) = self.current.get(&current_point) {
-                    if kinds.contains(&target_piece.kind) && &target_piece.color == color {
-                        break Some(current_point);
-                    } else {
-                        break None;
-                    };
-                };
-            };
-
-            current_point = current_point.add(&direction);
-        }
-    }
-
     pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
         if !self.is_in_bounds(&target) {
             return false;
@@ -190,83 +152,31 @@ impl Board {
         true
     }
 
-    pub fn get_allowed_moves(&self, source: &Point) -> Vec<Point> {
+    pub fn get_allowed_moves(&mut self, source: &Point) -> Vec<Point> {
         let piece = match self.current.get(&source) {
-            Some(p) => p,
+            Some(p) => p.clone(),
             None => return vec![],
         };
 
         let mut moves: Vec<Point> = self.get_moves_for_piece(&source);
 
-        if piece.kind == Kind::King {
-            let mut allowed_moves: Vec<Point> = vec![];
+        let original = self.current.clone();
 
-            for mv in moves.clone() {
-                if self.covered_by_opponent(&mv, &piece.color).len() == 0 {
-                    allowed_moves.push(mv.clone());
-                };
-            }
+        let mut allowed_moves: Vec<Point> = vec![];
 
-            moves.retain(|point| allowed_moves.contains(&point));
-        } else {
-            if let Some(allowed_moves) = self.check_if_protecting_king(&source) {
-                moves.retain(|point| allowed_moves.contains(&point));
+        for mv in moves.clone() {
+            self.move_piece(source.clone(), mv.clone());
+
+            if let None = self.detect_check(&piece.color) {
+                allowed_moves.push(mv);
             };
-        };
+            self.current = original.clone();
+        }
+
+
+        moves.retain(|point| allowed_moves.contains(&point));
 
         moves
-    }
-
-    fn check_if_protecting_king(&self, source: &Point) -> Option<Vec<Point>> {
-        let source_piece = match self.current.get(&source) {
-            Some(piece) => piece,
-            None => return None,
-        };
-        let king = self.find_king(&source_piece.color);
-
-        if let Some(direction) = king.relative_direction(&source) {
-            // Check if source is the first piece in this direction
-            let is_first_piece: bool =
-                match self.raytrace_for_kinds(&king, &direction, &source_piece.color, None) {
-                    Some(point) => &point == source,
-                    None => false,
-                };
-
-            if !is_first_piece {
-                None
-            } else {
-                // Check if source is covering the king from an opposing piece
-                let kinds = if direction.0 == 0 || direction.1 == 0 {
-                    Some(vec![Kind::Queen, Kind::Rook])
-                } else {
-                    Some(vec![Kind::Queen, Kind::Bishop])
-                };
-
-                if let Some(target_point) = self.raytrace_for_kinds(
-                    &source,
-                    &direction,
-                    &source_piece.color.inverse(),
-                    kinds,
-                ) {
-                    let mut blocking_points: Vec<Point> = vec![];
-                    let mut current_point = king;
-                    loop {
-                        current_point = current_point.add(&direction);
-                        blocking_points.push(current_point.clone());
-                        if current_point == target_point {
-                            break Some(blocking_points);
-                        }
-                        if !self.is_in_bounds(&current_point) {
-                            panic!("Went out of bounds while checking if piece protects king")
-                        }
-                    }
-                } else {
-                    None
-                }
-            }
-        } else {
-            None
-        }
     }
 
     fn get_moves_for_pawn(&self, source: &Point) -> Vec<Point> {
