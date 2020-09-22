@@ -45,6 +45,24 @@ fn test_failure_on_invalid_move() {
 
     assert_eq!(game.turn(Point(4, 4), Point(5, 5)), TurnResult::Failed,);
 
+    assert_eq!(game.color, Color::White)
+}
+
+#[test]
+fn test_failure_on_moving_wrong_color() {
+    let mut board = create_test_board(vec![
+        (Point(1, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(4, 4), Piece::new(Color::White, Kind::Rook)),
+    ]);
+
+    let mut game = Game {
+        board: board,
+        color: Color::Black,
+    };
+
+    assert_eq!(game.turn(Point(4, 4), Point(4, 5)), TurnResult::Failed);
+
     assert_eq!(game.color, Color::Black)
 }
 
