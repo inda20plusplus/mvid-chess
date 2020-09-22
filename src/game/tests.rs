@@ -40,7 +40,7 @@ fn test_failure_on_invalid_move() {
 
     let mut game = Game {
         board: board,
-        color: Color::Black,
+        color: Color::White,
     };
 
     assert_eq!(game.turn(Point(4, 4), Point(5, 5)), TurnResult::Failed,);
@@ -58,12 +58,12 @@ fn test_checks_opponent() {
 
     let mut game = Game {
         board: board,
-        color: Color::Black,
+        color: Color::White,
     };
 
-    assert_eq!(game.turn(Point(4, 4), Point(5, 4)), TurnResult::Checked,);
+    assert_eq!(game.turn(Point(4, 4), Point(4, 5)), TurnResult::Checked);
 
-    assert_eq!(game.color, Color::White,);
+    assert_eq!(game.color, Color::Black);
 }
 
 #[test]
@@ -83,7 +83,7 @@ fn test_check_mate() {
     };
 
     assert_eq!(
-        game.turn(Point(4, 4), Point(5, 4)),
+        game.turn(Point(4, 4), Point(4, 5)),
         TurnResult::GameEnd(EndResult::Win(Color::White)),
     );
 }
@@ -93,13 +93,14 @@ fn test_tie() {
     let mut board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 5), Piece::new(Color::Black, Kind::King)),
+        (Point(4, 6), Piece::new(Color::White, Kind::Rook)),
         (Point(4, 4), Piece::new(Color::White, Kind::Rook)),
         (Point(3, 3), Piece::new(Color::White, Kind::Rook)),
     ]);
 
     let mut game = Game {
         board: board,
-        color: Color::Black,
+        color: Color::White,
     };
 
     assert_eq!(
