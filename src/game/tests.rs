@@ -132,3 +132,31 @@ fn test_tie() {
         TurnResult::GameEnd(EndResult::Tie)
     )
 }
+
+#[test]
+fn test_promotion() {
+    let board = create_test_board(vec![
+        (Point(1, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(8, 7), Piece::new(Color::White, Kind::Pawn)),
+        (Point(8, 2), Piece::new(Color::Black, Kind::Pawn)),
+    ]);
+
+    let mut game = Game {
+        board: board,
+        color: Color::White,
+        promotion: None,
+    };
+
+    assert_eq!(game.turn(Point(8, 7), Point(8, 8)), TurnResult::Promotion);
+    assert_eq!(game.promotion, Some((Point(8, 7), Point(8, 8))));
+    assert_eq!(game.color, Color::White);
+    assert_eq!(game.promote(Kind::Queen), TurnResult::Checked);
+    assert_eq!(game.color, Color::Black);
+
+    assert_eq!(game.turn(Point(8, 2), Point(8, 1)), TurnResult::Promotion);
+    assert_eq!(game.promotion, Some((Point(8, 2), Point(8, 1))));
+    assert_eq!(game.color, Color::Black);
+    assert_eq!(game.promote(Kind::Queen), TurnResult::Checked);
+    assert_eq!(game.color, Color::White);
+}
