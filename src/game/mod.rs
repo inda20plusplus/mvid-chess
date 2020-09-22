@@ -22,7 +22,7 @@ pub enum TurnResult {
 pub struct Game {
     pub board: Board,
     pub color: Color,
-    promotion: Option<[Point; 2]>,
+    promotion: Option<(Point, Point)>,
 }
 
 impl Game {
