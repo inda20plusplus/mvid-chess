@@ -1,21 +1,16 @@
+use crate::*;
+use crate::board::Board;
+
 #[cfg(test)]
 mod tests;
 
-use crate::*;
-
-cfg_if::cfg_if! {
-    if #[cfg(test)] {
-        use crate::board::MockBoard as Board;
-    } else {
-        use crate::board::Board;
-    }
-}
-
+#[derive(PartialEq, Debug)]
 pub enum EndResult {
     Win(Color),
     Tie,
 }
 
+#[derive(PartialEq, Debug)]
 pub enum TurnResult {
     Moved,
     Checked,
