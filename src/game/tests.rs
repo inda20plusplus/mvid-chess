@@ -14,7 +14,7 @@ pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
 
 #[test]
 fn test_turn_valid_move() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 8), Piece::new(Color::Black, Kind::King)),
         (Point(4, 4), Piece::new(Color::White, Kind::Rook)),
@@ -32,7 +32,7 @@ fn test_turn_valid_move() {
 
 #[test]
 fn test_failure_on_invalid_move() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 8), Piece::new(Color::Black, Kind::King)),
         (Point(4, 4), Piece::new(Color::White, Kind::Rook)),
@@ -50,7 +50,7 @@ fn test_failure_on_invalid_move() {
 
 #[test]
 fn test_failure_on_moving_wrong_color() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 8), Piece::new(Color::Black, Kind::King)),
         (Point(4, 4), Piece::new(Color::White, Kind::Rook)),
@@ -68,7 +68,7 @@ fn test_failure_on_moving_wrong_color() {
 
 #[test]
 fn test_checks_opponent() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 5), Piece::new(Color::Black, Kind::King)),
         (Point(4, 4), Piece::new(Color::White, Kind::Rook)),
@@ -86,7 +86,7 @@ fn test_checks_opponent() {
 
 #[test]
 fn test_check_mate() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 5), Piece::new(Color::Black, Kind::King)),
         (Point(8, 8), Piece::new(Color::Black, Kind::Rook)),
@@ -108,7 +108,7 @@ fn test_check_mate() {
 
 #[test]
 fn test_tie() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 5), Piece::new(Color::Black, Kind::King)),
         (Point(4, 6), Piece::new(Color::White, Kind::Rook)),
