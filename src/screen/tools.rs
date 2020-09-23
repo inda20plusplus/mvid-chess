@@ -91,8 +91,8 @@ pub fn background(ctx: &mut ggez::Context, color: graphics::Color) {
         graphics::Rect {
             x: 0.0,
             y: 0.0,
-            w: super::super::WindowSize.0,
-            h: super::super::WindowSize.1,
+            w: super::super::WINDOW_SIZE.0,
+            h: super::super::WINDOW_SIZE.1,
         },
         color,
     )

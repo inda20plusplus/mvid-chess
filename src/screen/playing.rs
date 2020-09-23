@@ -90,4 +90,15 @@ pub fn playing(mainstate: &mut MainState, ctx: &mut ggez::Context) {
         }
         Overlay::None => (),
     }
+    match mainstate.state{
+        State::Checkmate=>{
+            super::tools::background(ctx, cselect());
+            match mainstate.turn {
+                Color::White => tools::text(ctx, 300.0, 100.0, "White Wins"),
+                Color::Black => tools::text(ctx, 300.0, 100.0, "Black Wins"),
+                _ => (),
+            }
+        },
+        _=>()
+    };
 }

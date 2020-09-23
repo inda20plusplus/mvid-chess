@@ -6,7 +6,7 @@ use ggez::graphics;
 use ggez::nalgebra as na;
 use std::path;
 mod screen;
-pub const WindowSize: (f32, f32) = (1200.0, 900.0);
+pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
 #[derive(Debug)]
 #[derive(Clone)]
 pub enum Piece {
@@ -19,7 +19,7 @@ pub enum Piece {
     None,
 }
 pub enum State {
-    Checkedmate,
+    Checkmate,
     Remi,
     Playing { promotion: bool, check: bool },
     None,
@@ -156,12 +156,11 @@ impl event::EventHandler for MainState {
     }
     fn mouse_button_down_event(
         &mut self,
-        _ctx: &mut ggez::Context,
+        ctx: &mut ggez::Context,
         button: ggez::event::MouseButton,
         x: f32,
         y: f32,
     ) { 
-        println!("{:?}", get_element(&mut (x, y)));
         match get_element(&mut (x, y)) {
             Element::Tile(mut pos) => match self.selected.clone() {
                 Selected::None => {
@@ -182,9 +181,9 @@ impl event::EventHandler for MainState {
                         game::TurnResult::Promotion => self.state = State::Playing{promotion : true,check: false},
                         game::TurnResult::Checked => self.state = State::Playing{promotion : false, check:true},
                         game::TurnResult::Moved => self.state = State::Playing{promotion : false, check:false},
+                        game::TurnResult::GameEnd(_)=>self.state = State::Checkmate,
                         _=>(),
                     };
-                    println!("{:?}", state);
                     self.parse();
                     self.selected = Selected::None;
                     self.help = Overlay::None;
@@ -219,7 +218,7 @@ pub fn main() -> ggez::GameResult {
     let resource_dir = path::PathBuf::from("./resources");
     let cb = ggez::ContextBuilder::new("super_simple", "ggez")
         .window_setup(ggez::conf::WindowSetup::default().title("Best chess game!"))
-        .window_mode(ggez::conf::WindowMode::default().dimensions(WindowSize.0, WindowSize.1))
+        .window_mode(ggez::conf::WindowMode::default().dimensions(WINDOW_SIZE.0, WINDOW_SIZE.1))
         .add_resource_path(resource_dir);
     let (ctx, event_loop) = &mut cb.build()?;
     let state = &mut MainState::new()?;
