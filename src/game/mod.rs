@@ -37,20 +37,35 @@ impl Game {
     }
 
     pub fn turn(&mut self, source: Point, target: Point) -> TurnResult {
+        if let Some(_) = self.promotion {
+            println!("1");
+            return TurnResult::Failed;
+        };
+
+        if !self.get_moves(&source).contains(&target) {
+            println!("{:?}", self.get_moves(&source));
+            return TurnResult::Failed;
+        }
+
         if let Some(piece) = self.board.current.get(&source) {
             if piece.color != self.color {
-                return TurnResult::Failed
+                return TurnResult::Failed;
+            } else if piece.kind == Kind::Pawn {
+                let last_row = match self.color {
+                    Color::White => 8,
+                    Color::Black => 1,
+                };
+                if target.1 == last_row {
+                    self.promotion = Some((source, target));
+                    return TurnResult::Promotion;
+                };
             };
         };
 
-        if self.board.get_allowed_moves(&source).contains(&target) {
-            if !self.board.move_piece(source, target) {
-                return TurnResult::Failed;
-            }
-        } else {
+        if !self.board.move_piece(source, target) {
             return TurnResult::Failed;
         }
-        
+
         let opponent_can_move = self.color_can_move(&self.color.inverse());
 
         let opponent_is_checked = match self.board.detect_check(&self.color.inverse()) {
@@ -69,6 +84,20 @@ impl Game {
             self.color = self.color.inverse();
             return TurnResult::Moved;
         }
+    }
+
+    pub fn promote(&mut self, kind: Kind) -> TurnResult {
+        let (source, target) = match self.promotion.clone() {
+            Some(points) => (points.0, points.1),
+            None => return TurnResult::Failed,
+        };
+
+        self.board
+            .current
+            .insert(source.clone(), Piece::new(self.color.clone(), kind));
+        self.promotion = None;
+
+        self.turn(source, target)
     }
 
     pub fn get_board(&self) -> HashMap<Point, Piece> {
