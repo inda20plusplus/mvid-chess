@@ -215,7 +215,7 @@ impl event::EventHandler for MainState {
 }
 
 pub fn main() -> ggez::GameResult {
-    let resource_dir = path::PathBuf::from("./resources");
+    let resource_dir = path::PathBuf::from("./gui/src/resources");
     let cb = ggez::ContextBuilder::new("super_simple", "ggez")
         .window_setup(ggez::conf::WindowSetup::default().title("Best chess game!"))
         .window_mode(ggez::conf::WindowMode::default().dimensions(WINDOW_SIZE.0, WINDOW_SIZE.1))

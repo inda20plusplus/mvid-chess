@@ -1,11 +1,2 @@
-[package]
-name = "chess"
-version = "0.1.0"
-authors = ["Markus Videfors <markus.videfors@outlook.com>"]
-edition = "2018"
-
-
-[dependencies]
-mockall = "0.8.1"
-cfg-if = "0.1.10"
-ggez = "0.5.1"
+[workspace]
+members = ["lib", "gui"]
