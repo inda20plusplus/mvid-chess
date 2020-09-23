@@ -154,6 +154,8 @@ fn test_promotion() {
     assert_eq!(game.promote(Kind::Queen), TurnResult::Checked);
     assert_eq!(game.color, Color::Black);
 
+    game.board.move_piece(Point(1, 8), Point(1, 7));
+
     assert_eq!(game.turn(Point(8, 2), Point(8, 1)), TurnResult::Promotion);
     assert_eq!(game.promotion, Some((Point(8, 2), Point(8, 1))));
     assert_eq!(game.color, Color::Black);
