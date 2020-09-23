@@ -1,5 +1,7 @@
 use crate::board::Board;
+use crate::pieces::{Kind, Piece};
 use crate::*;
+use std::collections::HashMap;
 
 #[cfg(test)]
 mod tests;
@@ -20,7 +22,7 @@ pub enum TurnResult {
 }
 
 pub struct Game {
-    pub board: Board,
+    board: Board,
     pub color: Color,
     promotion: Option<(Point, Point)>,
 }
@@ -67,6 +69,16 @@ impl Game {
             self.color = self.color.inverse();
             return TurnResult::Moved;
         }
+    }
+
+    pub fn get_board(&self) -> HashMap<Point, Piece> {
+        self.board.current.clone()
+    }
+
+    pub fn get_moves(&mut self, source: &Point) -> Vec<Point> {
+        let mut moves = self.board.get_allowed_moves(&source);
+
+        moves
     }
 
     fn color_can_move(&mut self, color: &Color) -> bool {
