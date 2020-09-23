@@ -117,12 +117,12 @@ impl Game {
                 if let Some(piece) = self.board.current.get(&point) {
                     if &piece.color == color {
                         if self.board.get_allowed_moves(&point).len() > 0 {
-                            return true
+                            return true;
                         }
                     }
                 }
             }
         }
-        false 
+        false
     }
 }
