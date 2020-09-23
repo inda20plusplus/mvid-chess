@@ -1,12 +1,15 @@
 use chess::game;
+use chess::pieces;
 use ggez;
 use ggez::event;
 use ggez::graphics;
 use ggez::nalgebra as na;
 use std::path;
 mod screen;
+pub const WindowSize: (f32, f32) = (1200.0, 900.0);
+#[derive(Debug)]
 #[derive(Clone)]
-enum Piece {
+pub enum Piece {
     King(Color),
     Queen(Color),
     Rook(Color),
@@ -15,15 +18,15 @@ enum Piece {
     Bishop(Color),
     None,
 }
-enum State {
+pub enum State {
     Checkedmate,
     Remi,
-    Playing{promotion: bool, check: bool},
+    Playing { promotion: bool, check: bool },
     None,
 }
-struct Moves(Position, Vec<Position>);
+pub struct Moves(Position, Vec<Position>);
 #[derive(Clone)]
-enum Overlay {
+pub enum Overlay {
     Moves {
         selected: Position,
         to: Vec<Position>,
@@ -31,7 +34,7 @@ enum Overlay {
     None,
 }
 #[derive(Debug, Clone, Copy)]
-struct Position(usize, usize);
+pub struct Position(usize, usize);
 impl Position {
     pub fn translate(&mut self) -> chess::Point {
         chess::Point((self.0 + 1) as i8, (self.1 + 1) as i8)
@@ -40,13 +43,14 @@ impl Position {
         Position((pos.0 - 1) as usize, (pos.1 - 1) as usize)
     }
 }
-struct Board(Vec<(Piece, Position)>);
-#[derive(PartialEq, Clone)]
-enum Color {
+pub struct Board(Vec<(Piece, Position)>);
+#[derive(PartialEq, Clone, Debug)]
+pub enum Color {
     Black,
     White,
+    None
 }
-struct MainState {
+pub struct MainState {
     pub game: game::Game,
     pub board: Board,
     pub turn: Color,
@@ -55,7 +59,7 @@ struct MainState {
     pub selected: Selected,
 }
 #[derive(Clone)]
-enum Selected {
+pub enum Selected {
     Position(Position),
     None,
 }
@@ -65,7 +69,10 @@ impl MainState {
             game: game::Game::new(),
             board: Board(vec![]),
             turn: Color::White,
-            state: State::Playing{promotion: false, check: false},
+            state: State::Playing {
+                promotion: false,
+                check: false,
+            },
             help: Overlay::None,
             selected: Selected::None,
         };
@@ -96,99 +103,49 @@ impl MainState {
                 }
             }
         }
-        self.turn = match self.game.color { 
+        self.turn = match self.game.color {
             chess::Color::Black => Color::Black,
             chess::Color::White => Color::White,
         };
     }
 }
-
-enum Element {
+#[derive(Debug)]
+pub enum ButtonType {
+    Promotion(Piece),
+    LCastling,
+    SCastling,
+}
+#[derive(Debug)]
+pub enum Element {
     Tile(Position),
+    Button(ButtonType),
     None,
 }
-fn board_edge(ctx: &mut ggez::Context) -> graphics::Mesh {
-    graphics::Mesh::new_rectangle(
-        ctx,
-        graphics::DrawMode::fill(),
-        graphics::Rect {
-            x: 0.0,
-            y: 0.0,
-            w: 1200.0,
-            h: 900.0,
-        },
-        graphics::Color::from_rgb(0, 0, 66),
-    )
-    .unwrap()
-}
-fn text(ctx: &mut ggez::Context, x: f32, y: f32, to_draw: &str) {
-    let font = graphics::Font::new(ctx, "/DejaVuSansMono.ttf");
-    let text = graphics::Text::new((to_draw, font.unwrap(), 48.0));
-    let dest_point = na::Point2::new(x, y);
-    graphics::draw(ctx, &text, (dest_point,));
-}
-fn draw_piece(ctx: &mut ggez::Context, position: Position, piece: Piece) -> () {
-    let mut path;
-    match piece {
-        Piece::King(color) => {
-            path = if color == Color::White {
-                "/pieces/Chess_klt60.png"
-            } else {
-                "/pieces/Chess_kdt60.png"
-            }
+pub struct Box(f32, f32, f32, f32);
+impl Box {
+    pub fn selected(&mut self, point :&mut (f32, f32)) -> bool{
+        if point.0 > self.0 && point.0 < self.1 && point.1 > self.2 && point.1 < self.3 {
+            point.0-=self.0;
+            point.1-=self.2;
+            true
+        } else {
+            false
         }
-        Piece::Queen(color) => {
-            path = if color == Color::White {
-                "/pieces/Chess_qlt60.png"
-            } else {
-                "/pieces/Chess_qdt60.png"
-            }
-        }
-        Piece::Rook(color) => {
-            path = if color == Color::White {
-                "/pieces/Chess_rlt60.png"
-            } else {
-                "/pieces/Chess_rdt60.png"
-            }
-        }
-        Piece::Pawn(color) => {
-            path = if color == Color::White {
-                "/pieces/Chess_plt60.png"
-            } else {
-                "/pieces/Chess_pdt60.png"
-            }
-        }
-        Piece::Bishop(color) => {
-            path = if color == Color::White {
-                "/pieces/Chess_blt60.png"
-            } else {
-                "/pieces/Chess_bdt60.png"
-            }
-        }
-        Piece::Knight(color) => {
-            path = if color == Color::White {
-                "/pieces/Chess_nlt60.png"
-            } else {
-                "/pieces/Chess_ndt60.png"
-            }
-        }
-        Piece::None => return,
     }
-    let image = graphics::Image::new(ctx, path).unwrap();
-    graphics::draw(
-        ctx,
-        &image,
-        (na::Point2::new(
-            70.0 + 100.0 * position.0 as f32,
-            70.0 + 100.0 * (7 - position.1) as f32,
-        ),),
-    );
 }
-fn get_element(mut x: f32, mut y: f32) -> Element {
-    if x > 50.0 && x < 850.0 && y > 50.0 && y < 850.0 {
-        x -= 50.0;
-        y -= 50.0;
-        return Element::Tile(Position((x / 100.0) as usize, 7 - (y / 100.0) as usize));
+fn get_element(point :&mut (f32, f32)) -> Element {
+    let mut board=Box(50.0, 850.0, 50.0, 850.0);
+    if board.selected(point){
+        return Element::Tile(Position((point.0 / 100.0) as usize, 7 - (point.1 / 100.0) as usize));
+    }
+    let mut promotions=Box(950.0, 1150.0, 250.0, 450.0);
+    if promotions.selected(point){
+        return match point {
+            (x,y) if *x < 100.0 && *y < 100.0 =>Element::Button(ButtonType::Promotion(Piece::Bishop(Color::None))),
+            (x,y) if *x < 100.0 =>Element::Button(ButtonType::Promotion(Piece::Queen(Color::None))),
+            (x,y) if *y < 100.0 =>Element::Button(ButtonType::Promotion(Piece::Knight(Color::None))),
+            _=>Element::Button(ButtonType::Promotion(Piece::Rook(Color::None))),
+        };
     }
     Element::None
 }
@@ -203,8 +160,9 @@ impl event::EventHandler for MainState {
         button: ggez::event::MouseButton,
         x: f32,
         y: f32,
-    ) {
-        match get_element(x, y) {
+    ) { 
+        println!("{:?}", get_element(&mut (x, y)));
+        match get_element(&mut (x, y)) {
             Element::Tile(mut pos) => match self.selected.clone() {
                 Selected::None => {
                     self.selected = Selected::Position(pos);
@@ -214,19 +172,34 @@ impl event::EventHandler for MainState {
                         to.push(Position::new(&i));
                     }
                     self.help = Overlay::Moves { selected: pos, to };
-                }
+                },
                 Selected::Position(position) => {
-                    println!("{:?} -> {:?}", position.clone().translate(), pos.translate());
-                    let state = self.game.turn(position.clone().translate(), pos.translate());
+                    let state = self
+                        .game
+                        .turn(position.clone().translate(), pos.translate());
+                    
                     match state {
-                        chess::game::TurnResult::Moved=>(),
-                        chess::game::TurnResult::Checked=>(),
-                        _=>()
-                    }
+                        game::TurnResult::Promotion => self.state = State::Playing{promotion : true,check: false},
+                        game::TurnResult::Checked => self.state = State::Playing{promotion : false, check:true},
+                        game::TurnResult::Moved => self.state = State::Playing{promotion : false, check:false},
+                        _=>(),
+                    };
+                    println!("{:?}", state);
                     self.parse();
                     self.selected = Selected::None;
                     self.help = Overlay::None;
-                }
+                },
+            },
+            Element::Button(ButtonType::Promotion(piece))=>{
+            self.game.promote(match piece{
+                Piece::Queen(_) => pieces::Kind::Queen,
+                Piece::Rook(_) => pieces::Kind::Rook,
+                Piece::Knight(_) => pieces::Kind::Knight,
+                Piece::Bishop(_) => pieces::Kind::Bishop,
+                _ => pieces::Kind::King
+             });
+             
+             self.state = State::Playing{promotion: false, check: false};
             },
             _ => {
                 self.selected = Selected::None;
@@ -236,7 +209,7 @@ impl event::EventHandler for MainState {
     }
     fn draw(&mut self, ctx: &mut ggez::Context) -> ggez::GameResult {
         graphics::clear(ctx, [0.0, 0.0, 0.0, 1.0].into());
-        self.playing(ctx);
+        screen::playing::playing(self, ctx);
         graphics::present(ctx)?;
         Ok(())
     }
@@ -246,7 +219,7 @@ pub fn main() -> ggez::GameResult {
     let resource_dir = path::PathBuf::from("./resources");
     let cb = ggez::ContextBuilder::new("super_simple", "ggez")
         .window_setup(ggez::conf::WindowSetup::default().title("Best chess game!"))
-        .window_mode(ggez::conf::WindowMode::default().dimensions(1200.0, 900.0))
+        .window_mode(ggez::conf::WindowMode::default().dimensions(WindowSize.0, WindowSize.1))
         .add_resource_path(resource_dir);
     let (ctx, event_loop) = &mut cb.build()?;
     let state = &mut MainState::new()?;
