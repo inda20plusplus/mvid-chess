@@ -209,6 +209,7 @@ impl Board {
             && !self
                 .current
                 .contains_key(&source.add(&direction).add(&direction))
+            && !self.current.contains_key(&source.add(&direction))
         {
             moves.push(source.add(&direction).add(&direction));
         };
