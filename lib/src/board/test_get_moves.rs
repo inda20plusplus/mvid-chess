@@ -8,9 +8,9 @@ fn test_free_movement() {
         (Point(3, 2), Piece::new(Color::White, Kind::Rook)),
     ]);
 
-    let mut possible_moves: Vec<Point> = board.get_allowed_moves(&Point(3, 2));
+    let possible_moves: Vec<Point> = board.get_allowed_moves(&Point(3, 2));
 
-    let mut allowed_moves = vec![
+    let allowed_moves = vec![
         Point(2, 2),
         Point(1, 2),
         Point(4, 2),
@@ -41,9 +41,9 @@ fn test_movement_blocked_by_same_color() {
         (Point(3, 1), Piece::new(Color::White, Kind::Pawn)),
     ]);
 
-    let mut possible_moves: Vec<Point> = board.get_allowed_moves(&Point(3, 3));
+    let possible_moves: Vec<Point> = board.get_allowed_moves(&Point(3, 3));
 
-    let mut allowed_moves = vec![Point(4, 3), Point(2, 3), Point(3, 4), Point(3, 2)];
+    let allowed_moves = vec![Point(4, 3), Point(2, 3), Point(3, 4), Point(3, 2)];
 
     assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
 }
@@ -75,9 +75,9 @@ fn test_blocked_by_opponent() {
         (Point(3, 2), Piece::new(Color::Black, Kind::Pawn)),
     ]);
 
-    let mut possible_moves: Vec<Point> = board.get_allowed_moves(&Point(3, 3));
+    let possible_moves: Vec<Point> = board.get_allowed_moves(&Point(3, 3));
 
-    let mut allowed_moves = vec![
+    let allowed_moves = vec![
         Point(4, 3),
         Point(5, 3),
         Point(2, 3),
