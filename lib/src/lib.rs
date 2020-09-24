@@ -3,7 +3,7 @@ pub mod game;
 pub mod pieces;
 
 #[derive(Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
-pub struct Point(i8, i8);
+pub struct Point(pub i8, pub i8);
 
 impl Point {
     pub fn add(&self, other: &Point) -> Point {

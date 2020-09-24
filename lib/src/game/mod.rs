@@ -38,12 +38,10 @@ impl Game {
 
     pub fn turn(&mut self, source: Point, target: Point) -> TurnResult {
         if let Some(_) = self.promotion {
-            println!("1");
             return TurnResult::Failed;
         };
 
         if !self.get_moves(&source).contains(&target) {
-            println!("{:?}", self.get_moves(&source));
             return TurnResult::Failed;
         }
 
