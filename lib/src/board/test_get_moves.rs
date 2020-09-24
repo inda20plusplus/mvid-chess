@@ -168,6 +168,8 @@ fn test_pawn_has_not_moved() {
         (Point(1, 8), Piece::new(Color::Black, Kind::King)),
         (Point(1, 2), Piece::new(Color::White, Kind::Pawn)),
         (Point(1, 7), Piece::new(Color::Black, Kind::Pawn)),
+        (Point(2, 7), Piece::new(Color::Black, Kind::Pawn)),
+        (Point(2, 6), Piece::new(Color::Black, Kind::Rook)),
     ]);
 
     assert_eq!(
@@ -178,6 +180,11 @@ fn test_pawn_has_not_moved() {
     assert_eq!(
         board.get_allowed_moves(&Point(1, 7)).as_sorted(),
         vec![Point(1, 6), Point(1, 5)].as_sorted()
+    );
+
+    assert_eq!(
+        board.get_allowed_moves(&Point(2, 7)),
+        vec![]
     );
 }
 
