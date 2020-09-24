@@ -103,6 +103,11 @@ impl Game {
     }
 
     pub fn get_moves(&mut self, source: &Point) -> Vec<Point> {
+        if let Some(piece) = self.board.current.get(&source) {
+            if piece.color != self.color {
+                return vec![];
+            }
+        }
         let mut moves = self.board.get_allowed_moves(&source);
 
         moves
