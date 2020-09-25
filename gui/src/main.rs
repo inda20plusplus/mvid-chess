@@ -7,8 +7,7 @@ use ggez::nalgebra as na;
 use std::path;
 mod screen;
 pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum Piece {
     King(Color),
     Queen(Color),
@@ -48,7 +47,7 @@ pub struct Board(Vec<(Piece, Position)>);
 pub enum Color {
     Black,
     White,
-    None
+    None,
 }
 pub struct MainState {
     pub game: game::Game,
@@ -123,28 +122,37 @@ pub enum Element {
 }
 pub struct Box(f32, f32, f32, f32);
 impl Box {
-    pub fn selected(&mut self, point :&mut (f32, f32)) -> bool{
+    pub fn selected(&mut self, point: &mut (f32, f32)) -> bool {
         if point.0 > self.0 && point.0 < self.1 && point.1 > self.2 && point.1 < self.3 {
-            point.0-=self.0;
-            point.1-=self.2;
+            point.0 -= self.0;
+            point.1 -= self.2;
             true
         } else {
             false
         }
     }
 }
-fn get_element(point :&mut (f32, f32)) -> Element {
-    let mut board=Box(50.0, 850.0, 50.0, 850.0);
-    if board.selected(point){
-        return Element::Tile(Position((point.0 / 100.0) as usize, 7 - (point.1 / 100.0) as usize));
+fn get_element(point: &mut (f32, f32)) -> Element {
+    let mut board = Box(50.0, 850.0, 50.0, 850.0);
+    if board.selected(point) {
+        return Element::Tile(Position(
+            (point.0 / 100.0) as usize,
+            7 - (point.1 / 100.0) as usize,
+        ));
     }
-    let mut promotions=Box(950.0, 1150.0, 250.0, 450.0);
-    if promotions.selected(point){
+    let mut promotions = Box(950.0, 1150.0, 250.0, 450.0);
+    if promotions.selected(point) {
         return match point {
-            (x,y) if *x < 100.0 && *y < 100.0 =>Element::Button(ButtonType::Promotion(Piece::Bishop(Color::None))),
-            (x,y) if *x < 100.0 =>Element::Button(ButtonType::Promotion(Piece::Queen(Color::None))),
-            (x,y) if *y < 100.0 =>Element::Button(ButtonType::Promotion(Piece::Knight(Color::None))),
-            _=>Element::Button(ButtonType::Promotion(Piece::Rook(Color::None))),
+            (x, y) if *x < 100.0 && *y < 100.0 => {
+                Element::Button(ButtonType::Promotion(Piece::Bishop(Color::None)))
+            }
+            (x, y) if *x < 100.0 => {
+                Element::Button(ButtonType::Promotion(Piece::Queen(Color::None)))
+            }
+            (x, y) if *y < 100.0 => {
+                Element::Button(ButtonType::Promotion(Piece::Knight(Color::None)))
+            }
+            _ => Element::Button(ButtonType::Promotion(Piece::Rook(Color::None))),
         };
     }
     Element::None
@@ -160,7 +168,7 @@ impl event::EventHandler for MainState {
         button: ggez::event::MouseButton,
         x: f32,
         y: f32,
-    ) { 
+    ) {
         match get_element(&mut (x, y)) {
             Element::Tile(mut pos) => match self.selected.clone() {
                 Selected::None => {
@@ -171,35 +179,53 @@ impl event::EventHandler for MainState {
                         to.push(Position::new(&i));
                     }
                     self.help = Overlay::Moves { selected: pos, to };
-                },
+                }
                 Selected::Position(position) => {
                     let state = self
                         .game
                         .turn(position.clone().translate(), pos.translate());
-                    
+
                     match state {
-                        game::TurnResult::Promotion => self.state = State::Playing{promotion : true,check: false},
-                        game::TurnResult::Checked => self.state = State::Playing{promotion : false, check:true},
-                        game::TurnResult::Moved => self.state = State::Playing{promotion : false, check:false},
-                        game::TurnResult::GameEnd(_)=>self.state = State::Checkmate,
-                        _=>(),
+                        game::TurnResult::Promotion => {
+                            self.state = State::Playing {
+                                promotion: true,
+                                check: false,
+                            }
+                        }
+                        game::TurnResult::Checked => {
+                            self.state = State::Playing {
+                                promotion: false,
+                                check: true,
+                            }
+                        }
+                        game::TurnResult::Moved => {
+                            self.state = State::Playing {
+                                promotion: false,
+                                check: false,
+                            }
+                        }
+                        game::TurnResult::GameEnd(_) => self.state = State::Checkmate,
+                        _ => (),
                     };
                     self.parse();
                     self.selected = Selected::None;
                     self.help = Overlay::None;
-                },
+                }
             },
-            Element::Button(ButtonType::Promotion(piece))=>{
-            self.game.promote(match piece{
-                Piece::Queen(_) => pieces::Kind::Queen,
-                Piece::Rook(_) => pieces::Kind::Rook,
-                Piece::Knight(_) => pieces::Kind::Knight,
-                Piece::Bishop(_) => pieces::Kind::Bishop,
-                _ => pieces::Kind::King
-             });
-             
-             self.state = State::Playing{promotion: false, check: false};
-            },
+            Element::Button(ButtonType::Promotion(piece)) => {
+                self.game.promote(match piece {
+                    Piece::Queen(_) => pieces::Kind::Queen,
+                    Piece::Rook(_) => pieces::Kind::Rook,
+                    Piece::Knight(_) => pieces::Kind::Knight,
+                    Piece::Bishop(_) => pieces::Kind::Bishop,
+                    _ => pieces::Kind::King,
+                });
+
+                self.state = State::Playing {
+                    promotion: false,
+                    check: false,
+                };
+            }
             _ => {
                 self.selected = Selected::None;
                 self.help = Overlay::None;
