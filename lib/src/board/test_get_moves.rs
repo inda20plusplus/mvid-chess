@@ -182,10 +182,7 @@ fn test_pawn_has_not_moved() {
         vec![Point(1, 6), Point(1, 5)].as_sorted()
     );
 
-    assert_eq!(
-        board.get_allowed_moves(&Point(2, 7)),
-        vec![]
-    );
+    assert_eq!(board.get_allowed_moves(&Point(2, 7)), vec![]);
 }
 
 #[test]
