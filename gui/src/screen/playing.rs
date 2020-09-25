@@ -52,6 +52,7 @@ pub fn playing(mainstate: &mut MainState, ctx: &mut ggez::Context) {
                 tools::draw_tile(ctx, &Position(10, 5), cselect());
                 tools::draw_tile(ctx, &Position(9, 5), cselect());
                 tools::draw_tile(ctx, &Position(10, 4), cselect());
+            }else{
                 for i in 0..8 {
                     for j in 0..8 {
                         tools::draw_tile(
