@@ -1,4 +1,4 @@
-use super::super::{Color, MainState, Overlay, Position, Piece, State};
+use super::super::{Color, MainState, Overlay, Piece, Position, State};
 use super::tools;
 use chess::game;
 use ggez;
@@ -46,20 +46,16 @@ pub fn playing(mainstate: &mut MainState, ctx: &mut ggez::Context) {
         }
     }
     match mainstate.state {
-        State::Playing{promotion, check}=> {
-            if !promotion{
+        State::Playing { promotion, check } => {
+            if !promotion {
                 tools::draw_tile(ctx, &Position(9, 4), cselect());
                 tools::draw_tile(ctx, &Position(10, 5), cselect());
                 tools::draw_tile(ctx, &Position(9, 5), cselect());
                 tools::draw_tile(ctx, &Position(10, 4), cselect());
-            }else{
+            } else {
                 for i in 0..8 {
                     for j in 0..8 {
-                        tools::draw_tile(
-                            ctx,
-                            &Position(i, j),
-                            cselect()
-                        );
+                        tools::draw_tile(ctx, &Position(i, j), cselect());
                     }
                 }
             };
@@ -67,9 +63,8 @@ pub fn playing(mainstate: &mut MainState, ctx: &mut ggez::Context) {
                 true => tools::text(ctx, 875.0, 150.0, "Check."),
                 false => tools::text(ctx, 875.0, 150.0, "Not Check"),
             }
-
-        },
-        _=>()
+        }
+        _ => (),
     };
     match mainstate.turn {
         Color::White => tools::text(ctx, 875.0, 100.0, "White's turn."),
@@ -79,7 +74,7 @@ pub fn playing(mainstate: &mut MainState, ctx: &mut ggez::Context) {
     for i in mainstate.board.0.iter() {
         tools::draw_piece(ctx, i.1.clone(), i.0.clone());
     }
-    
+
     match mainstate.help.clone() {
         Overlay::Moves { selected, to } => {
             {
@@ -91,15 +86,15 @@ pub fn playing(mainstate: &mut MainState, ctx: &mut ggez::Context) {
         }
         Overlay::None => (),
     }
-    match mainstate.state{
-        State::Checkmate=>{
+    match mainstate.state {
+        State::Checkmate => {
             super::tools::background(ctx, cselect());
             match mainstate.turn {
                 Color::White => tools::text(ctx, 300.0, 100.0, "White Wins"),
                 Color::Black => tools::text(ctx, 300.0, 100.0, "Black Wins"),
                 _ => (),
             }
-        },
-        _=>()
+        }
+        _ => (),
     };
 }
