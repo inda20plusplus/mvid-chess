@@ -2,8 +2,13 @@ use super::*;
 use crate::pieces::*;
 
 pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
+    let mut current: [Option<Piece>; 64] = [None; 64];
+    for (point, piece) in positions {
+        current[point.index()] = Some(piece);
+    }
+
     Board {
-        current: positions.into_iter().collect(),
+        current,
         graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
             .into_iter()
             .collect(),

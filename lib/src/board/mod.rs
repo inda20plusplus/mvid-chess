@@ -12,7 +12,7 @@ use crate::*;
 use std::collections::HashMap;
 
 pub struct Board {
-    pub current: HashMap<Point, Piece>,
+    pub current: [Option<Piece>; 64],
     pub graveyard: HashMap<Color, Vec<Piece>>,
     pub height: std::ops::RangeInclusive<i8>,
     pub width: std::ops::RangeInclusive<i8>,
@@ -47,7 +47,11 @@ impl Board {
             starting_positions.push((Point(i, 7), Piece::new(Color::Black, Kind::Pawn)));
         }
 
-        let starting_board: HashMap<Point, Piece> = starting_positions.into_iter().collect();
+        let mut starting_board: [Option<Piece>; 64] = [None; 64];
+        for (pos, piece) in starting_positions {
+            starting_board[pos.index()] = Some(piece);
+        }
+
         Board {
             current: starting_board,
             graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
@@ -66,7 +70,7 @@ impl Board {
         for x in self.width.clone() {
             for y in self.height.clone() {
                 let current_point = Point(x, y);
-                if let Some(piece) = self.current.get(&current_point) {
+                if let Some(piece) = self.current[current_point.index()] {
                     if piece.kind == Kind::King && &piece.color == color {
                         return current_point;
                     }
@@ -74,6 +78,14 @@ impl Board {
             }
         }
         panic!("Couldn't find king");
+    }
+
+    // pub fn at_index(&self, index: usize) -> Option<Piece> {
+    //     self.current[index]
+    // }
+
+    pub fn at_point(&self, point: &Point) -> Option<Piece> {
+        self.current[point.index()]
     }
 
     pub fn detect_check(&self, color: &Color) -> Option<Vec<Point>> {
@@ -94,10 +106,10 @@ impl Board {
         let mut covering_pieces: Vec<Point> = vec![];
 
         for mv in pieces::moves::ALL.iter() {
-            let mut current_point: Point = source.clone().add(&mv.0);
+            let mut current_point = source.add(&mv.0);
 
             while self.is_in_bounds(&current_point) {
-                if let Some(piece) = self.current.get(&current_point) {
+                if let Some(piece) = self.current[current_point.index()] {
                     if piece.color == opponent {
                         if self.get_moves_for_piece(&current_point).contains(&source) {
                             covering_pieces.push(current_point.clone());
@@ -123,37 +135,36 @@ impl Board {
             return false;
         }
 
-        let source_piece_ref = match self.current.get(&source) {
+        let source_index = source.index();
+        let target_index = target.index();
+
+        let source_piece = match self.current[source_index] {
             Some(piece) => piece,
             None => return false,
         };
 
-        if let Some(target_piece_ref) = self.current.get(&target) {
-            if target_piece_ref.color == source_piece_ref.color {
+        if let Some(target_piece) = self.current[target_index] {
+            if target_piece.color == source_piece.color {
                 return false;
             } else {
-                let target_piece = self.current.remove(&target).unwrap();
-                let graveyard = self
-                    .graveyard
-                    .entry(target_piece.color.clone())
-                    .or_default();
+                let graveyard = self.graveyard.entry(target_piece.color).or_default();
                 graveyard.push(target_piece);
             }
         }
 
-        let mut source_piece = self.current.remove(&source).unwrap();
+        let mut new_target_piece = source_piece;
+        new_target_piece.has_moved = true;
 
-        source_piece.has_moved = true;
-
-        self.current.insert(target, source_piece);
+        self.current[target_index] = Some(new_target_piece);
+        self.current[source_index] = None;
 
         true
     }
 
-    pub fn get_allowed_moves(&mut self, source: &Point) -> Vec<Point> {
-        let piece = match self.current.get(&source) {
+    pub fn get_allowed_moves(&mut self, source: &Point) -> Option<Vec<Point>> {
+        let piece = match &self.current[source.index()] {
             Some(p) => p.clone(),
-            None => return vec![],
+            None => return None,
         };
 
         let mut moves: Vec<Point> = self.get_moves_for_piece(&source);
@@ -165,7 +176,7 @@ impl Board {
         for mv in moves.clone() {
             self.move_piece(source.clone(), mv.clone());
 
-            if let None = self.detect_check(&piece.color) {
+            if self.detect_check(&piece.color).is_none() {
                 allowed_moves.push(mv);
             };
             self.current = original.clone();
@@ -173,11 +184,15 @@ impl Board {
 
         moves.retain(|point| allowed_moves.contains(&point));
 
-        moves
+        if moves.is_empty() {
+            None
+        } else {
+            Some(moves)
+        }
     }
 
     fn get_moves_for_pawn(&self, source: &Point) -> Vec<Point> {
-        let piece = self.current.get(&source).unwrap();
+        let piece = self.current[source.index()].unwrap();
         if piece.kind != Kind::Pawn {
             panic!("Piece is not of kind pawn");
         };
@@ -189,36 +204,45 @@ impl Board {
 
         let mut moves: Vec<Point> = vec![];
 
-        if !self.current.contains_key(&source.add(&direction)) {
+        if self.at_point(&source.add(&direction)).is_none() {
             moves.push(source.add(&direction));
         };
 
-        if let Some(target) = self.current.get(&source.add(&direction.add(&Point(1, 0)))) {
-            if target.color != piece.color {
-                moves.push(source.add(&direction.add(&Point(1, 0))));
+        let plus = source.add(&direction.add(&Point(1, 0)));
+        if self.is_in_bounds(&plus) {
+            if let Some(target) = self.at_point(&plus) {
+                if target.color != piece.color {
+                    moves.push(plus);
+                };
             };
-        };
+        }
 
-        if let Some(target) = self.current.get(&source.add(&direction.add(&Point(-1, 0)))) {
-            if target.color != piece.color {
-                moves.push(source.add(&direction.add(&Point(-1, 0))));
+        let minus = source.add(&direction.add(&Point(-1, 0)));
+        if self.is_in_bounds(&minus) {
+            if let Some(target) = self.at_point(&minus) {
+                if target.color != piece.color {
+                    moves.push(minus);
+                };
             };
-        };
+        }
+
+        let one_forward = source.add(&direction);
+        let two_forward = one_forward.add(&direction);
 
         if !piece.has_moved
-            && !self
-                .current
-                .contains_key(&source.add(&direction).add(&direction))
-            && !self.current.contains_key(&source.add(&direction))
+            && self.is_in_bounds(&one_forward)
+            && self.at_point(&one_forward).is_none()
+            && self.is_in_bounds(&two_forward)
+            && self.at_point(&two_forward).is_none()
         {
-            moves.push(source.add(&direction).add(&direction));
+            moves.push(two_forward);
         };
 
         moves
     }
 
     fn get_moves_for_piece(&self, source: &Point) -> Vec<Point> {
-        let piece = self.current.get(&source).unwrap();
+        let piece = self.current[source.index()].unwrap();
         if piece.kind == Kind::Pawn {
             return self.get_moves_for_pawn(&source);
         };
@@ -229,14 +253,14 @@ impl Board {
             let mut current_point = source.add(&mv.0);
 
             while self.is_in_bounds(&current_point) {
-                if !self.current.contains_key(&current_point) {
-                    moves.push(current_point.clone());
-                } else {
-                    let target_piece = self.current.get(&current_point).unwrap();
-                    if target_piece.color != piece.color {
-                        moves.push(current_point);
+                match self.at_point(&current_point) {
+                    Some(target_piece) => {
+                        if target_piece.color != piece.color {
+                            moves.push(current_point);
+                        }
+                        break;
                     }
-                    break;
+                    None => moves.push(current_point.clone()),
                 }
 
                 if mv.1 {

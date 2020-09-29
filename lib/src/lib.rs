@@ -10,6 +10,10 @@ impl Point {
         Point(self.0 + other.0, self.1 + other.1)
     }
 
+    pub fn index(&self) -> usize {
+        ((self.1 - 1) * 8 + (self.0 - 1)) as usize
+    }
+
     pub fn relative_direction(&self, other: &Point) -> Option<Point> {
         if self.0 == other.0 {
             if self.1 < other.1 {
@@ -57,7 +61,7 @@ impl Sorted for Vec<Point> {
     }
 }
 
-#[derive(Clone, Hash, Eq, PartialEq, Debug)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq, Debug)]
 pub enum Color {
     White,
     Black,

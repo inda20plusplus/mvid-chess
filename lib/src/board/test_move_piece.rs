@@ -9,10 +9,10 @@ fn test_move_to_empty_and_sets_has_moved() {
     let result: bool = board.move_piece(Point(1, 1), Point(2, 1));
 
     assert!(result);
-    assert_eq!(board.current.get(&Point(1, 1)), None);
+    assert_eq!(board.at_point(&Point(1, 1)), None);
     assert_eq!(
-        board.current.get(&Point(2, 1)),
-        Some(&Piece {
+        board.at_point(&Point(2, 1)),
+        Some(Piece {
             color: Color::White,
             kind: Kind::Rook,
             has_moved: true,
@@ -31,16 +31,16 @@ fn test_move_to_occupied_by_same_color() {
 
     assert!(!result);
     assert_eq!(
-        board.current.get(&Point(1, 1)),
-        Some(&Piece {
+        board.at_point(&Point(1, 1)),
+        Some(Piece {
             color: Color::White,
             kind: Kind::Rook,
             has_moved: false,
         })
     );
     assert_eq!(
-        board.current.get(&Point(2, 1)),
-        Some(&Piece {
+        board.at_point(&Point(2, 1)),
+        Some(Piece {
             color: Color::White,
             kind: Kind::Pawn,
             has_moved: false,
@@ -59,8 +59,8 @@ fn test_move_to_occupied_by_other_color() {
 
     assert!(result);
     assert_eq!(
-        board.current.get(&Point(2, 1)),
-        Some(&Piece {
+        board.at_point(&Point(2, 1)),
+        Some(Piece {
             color: Color::White,
             kind: Kind::Rook,
             has_moved: true,
