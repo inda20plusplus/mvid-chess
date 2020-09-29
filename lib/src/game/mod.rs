@@ -1,7 +1,6 @@
 use crate::board::Board;
 use crate::pieces::{Kind, Piece};
 use crate::*;
-use std::collections::HashMap;
 
 #[cfg(test)]
 mod tests;
@@ -41,11 +40,15 @@ impl Game {
             return TurnResult::Failed;
         };
 
-        if !self.get_moves(&source).contains(&target) {
+        if let Some(moves) = self.get_moves(&source) {
+            if !moves.contains(&target) {
+                return TurnResult::Failed;
+            }
+        } else {
             return TurnResult::Failed;
         }
 
-        if let Some(piece) = self.board.current.get(&source) {
+        if let Some(piece) = self.board.at_point(&source) {
             if piece.color != self.color {
                 return TurnResult::Failed;
             } else if piece.kind == Kind::Pawn {
@@ -90,36 +93,34 @@ impl Game {
             None => return TurnResult::Failed,
         };
 
-        self.board
-            .current
-            .insert(source.clone(), Piece::new(self.color.clone(), kind));
+        self.board.current[source.index()] = Some(Piece::new(self.color.clone(), kind));
+
         self.promotion = None;
 
         self.turn(source, target)
     }
 
-    pub fn get_board(&self) -> HashMap<Point, Piece> {
-        self.board.current.clone()
+    pub fn get_board(&self) -> &Board {
+        &self.board
     }
 
-    pub fn get_moves(&mut self, source: &Point) -> Vec<Point> {
-        if let Some(piece) = self.board.current.get(&source) {
+    pub fn get_moves(&mut self, source: &Point) -> Option<Vec<Point>> {
+        if let Some(piece) = &self.board.current[source.index()] {
             if piece.color != self.color {
-                return vec![];
+                return None;
             }
         }
-        let mut moves = self.board.get_allowed_moves(&source);
 
-        moves
+        self.board.get_allowed_moves(source)
     }
 
     fn color_can_move(&mut self, color: &Color) -> bool {
         for x in self.board.width.clone() {
             for y in self.board.height.clone() {
                 let point = Point(x, y);
-                if let Some(piece) = self.board.current.get(&point) {
+                if let Some(piece) = self.board.at_point(&point) {
                     if &piece.color == color {
-                        if self.board.get_allowed_moves(&point).len() > 0 {
+                        if let Some(_) = self.board.get_allowed_moves(&point) {
                             return true;
                         }
                     }

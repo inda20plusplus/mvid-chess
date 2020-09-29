@@ -84,8 +84,7 @@ impl MainState {
             for j in 1..=8 {
                 let map_point = chess::Point(i, j);
                 let position = Position::new(&map_point);
-                if self.game.get_board().contains_key(&map_point) {
-                    let cur = self.game.get_board()[&map_point].clone();
+                if let Some(cur) = self.game.get_board().at_point(&map_point) {
                     let color = match cur.color {
                         chess::Color::White => Color::White,
                         chess::Color::Black => Color::Black,
@@ -173,12 +172,13 @@ impl event::EventHandler for MainState {
             Element::Tile(mut pos) => match self.selected.clone() {
                 Selected::None => {
                     self.selected = Selected::Position(pos);
-                    let res = self.game.get_moves(&(pos.clone()).translate());
-                    let mut to: Vec<Position> = vec![];
-                    for i in res.iter() {
-                        to.push(Position::new(&i));
+                    if let Some(res) = self.game.get_moves(&(pos.clone()).translate()) {
+                        let mut to = Vec::<Position>::with_capacity(res.len());
+                        for i in res.iter() {
+                            to.push(Position::new(&i));
+                        }
+                        self.help = Overlay::Moves { selected: pos, to };
                     }
-                    self.help = Overlay::Moves { selected: pos, to };
                 }
                 Selected::Position(position) => {
                     let state = self
