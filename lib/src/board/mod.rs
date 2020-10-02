@@ -110,10 +110,8 @@ impl Board {
 
             while self.is_in_bounds(&current_point) {
                 if let Some(piece) = self.current[current_point.index()] {
-                    if piece.color == opponent {
-                        if self.get_moves_for_piece(&current_point).contains(&source) {
-                            covering_pieces.push(current_point.clone());
-                        }
+                    if piece.color == opponent && self.get_moves_for_piece(&current_point).contains(&source) {
+                        covering_pieces.push(current_point.clone());
                     }
                 }
 
