@@ -2,7 +2,7 @@ pub mod board;
 pub mod game;
 pub mod pieces;
 
-#[derive(Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
 pub struct Point(pub i8, pub i8);
 
 impl Point {
