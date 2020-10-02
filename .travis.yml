@@ -9,6 +9,7 @@ jobs:
     beta
     nightly
 before_install:
+  - apt-get install pkg-config
   - rustup component add rustfmt
   - rustup component add clippy
 script:
