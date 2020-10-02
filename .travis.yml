@@ -11,6 +11,8 @@ jobs:
 before_install:
   - sudo apt-get update
   - sudo apt-get -y install pkg-config
+  - sudo apt-get -y install libudev-dev
+  - sudo apt-get -y install libsdl2-dev
   - rustup component add rustfmt
   - rustup component add clippy
 script:
