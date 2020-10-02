@@ -78,7 +78,7 @@ impl Game {
             self.color = self.color.inverse();
             TurnResult::Checked
         } else if opponent_is_checked && !opponent_can_move {
-            TurnResult::GameEnd(EndResult::Win(self.color.clone()))
+            TurnResult::GameEnd(EndResult::Win(self.color))
         } else if !opponent_is_checked && !opponent_can_move {
             TurnResult::GameEnd(EndResult::Tie)
         } else {
@@ -88,12 +88,12 @@ impl Game {
     }
 
     pub fn promote(&mut self, kind: Kind) -> TurnResult {
-        let (source, target) = match self.promotion.clone() {
+        let (source, target) = match self.promotion {
             Some(points) => (points.0, points.1),
             None => return TurnResult::Failed,
         };
 
-        self.board.current[source.index()] = Some(Piece::new(self.color.clone(), kind));
+        self.board.current[source.index()] = Some(Piece::new(self.color, kind));
 
         self.promotion = None;
 

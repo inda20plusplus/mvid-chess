@@ -111,7 +111,7 @@ impl Board {
             while self.is_in_bounds(&current_point) {
                 if let Some(piece) = self.current[current_point.index()] {
                     if piece.color == opponent && self.get_moves_for_piece(&current_point).contains(&source) {
-                        covering_pieces.push(current_point.clone());
+                        covering_pieces.push(current_point);
                     }
                 }
 
@@ -159,23 +159,23 @@ impl Board {
 
     pub fn get_allowed_moves(&mut self, source: &Point) -> Option<Vec<Point>> {
         let piece = match &self.current[source.index()] {
-            Some(p) => p.clone(),
+            Some(p) => *p,
             None => return None,
         };
 
         let mut moves: Vec<Point> = self.get_moves_for_piece(&source);
 
-        let original = self.current.clone();
+        let original = self.current;
 
         let mut allowed_moves: Vec<Point> = vec![];
 
-        for mv in moves.clone() {
-            self.move_piece(source.clone(), mv.clone());
+        for mv in &moves {
+            self.move_piece(*source, *mv);
 
             if self.detect_check(&piece.color).is_none() {
-                allowed_moves.push(mv);
+                allowed_moves.push(*mv);
             };
-            self.current = original.clone();
+            self.current = original;
         }
 
         moves.retain(|point| allowed_moves.contains(&point));
@@ -256,7 +256,7 @@ impl Board {
                         }
                         break;
                     }
-                    None => moves.push(current_point.clone()),
+                    None => moves.push(current_point),
                 }
 
                 if mv.1 {
