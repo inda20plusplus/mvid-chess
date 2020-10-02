@@ -93,7 +93,7 @@ impl Board {
 
         let points: Vec<Point> = self.covered_by_opponent(&king, &color);
 
-        if points.len() > 0 {
+        if !points.is_empty() {
             Some(points)
         } else {
             None
