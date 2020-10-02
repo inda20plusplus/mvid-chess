@@ -76,14 +76,14 @@ impl Game {
 
         if opponent_is_checked && opponent_can_move {
             self.color = self.color.inverse();
-            return TurnResult::Checked;
+            TurnResult::Checked
         } else if opponent_is_checked && !opponent_can_move {
-            return TurnResult::GameEnd(EndResult::Win(self.color.clone()));
+            TurnResult::GameEnd(EndResult::Win(self.color.clone()))
         } else if !opponent_is_checked && !opponent_can_move {
-            return TurnResult::GameEnd(EndResult::Tie);
+            TurnResult::GameEnd(EndResult::Tie)
         } else {
             self.color = self.color.inverse();
-            return TurnResult::Moved;
+            TurnResult::Moved
         }
     }
 
