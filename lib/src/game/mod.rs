@@ -36,7 +36,7 @@ impl Game {
     }
 
     pub fn turn(&mut self, source: Point, target: Point) -> TurnResult {
-        if let Some(_) = self.promotion {
+        if self.promotion.is_some() {
             return TurnResult::Failed;
         };
 
@@ -120,7 +120,7 @@ impl Game {
                 let point = Point(x, y);
                 if let Some(piece) = self.board.at_point(&point) {
                     if &piece.color == color {
-                        if let Some(_) = self.board.get_allowed_moves(&point) {
+                        if self.board.get_allowed_moves(&point).is_some() {
                             return true;
                         }
                     }
