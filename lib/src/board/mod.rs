@@ -129,9 +129,7 @@ impl Board {
     }
 
     pub fn move_piece(&mut self, source: Point, target: Point) -> bool {
-        if !self.is_in_bounds(&target) {
-            return false;
-        } else if source == target {
+        if !self.is_in_bounds(&target) || source == target {
             return false;
         }
 
