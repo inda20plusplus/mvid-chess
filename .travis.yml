@@ -6,8 +6,8 @@ rust:
   - nightly
 jobs:
   allow_failures:
-    beta
-    nightly
+    - beta
+    - nightly
 before_install:
   - apt-get install pkg-config
   - rustup component add rustfmt
