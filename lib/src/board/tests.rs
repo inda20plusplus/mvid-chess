@@ -7,9 +7,7 @@ pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
     }
     Board {
         current,
-        graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
-            .into_iter()
-            .collect(),
+        graveyard: [vec![], vec![]],
         height: (1..=8),
         width: (1..=8),
     }
@@ -17,7 +15,7 @@ pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
 
 #[test]
 fn test_detect_check() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(4, 4), Piece::new(Color::White, Kind::King)),
         (Point(3, 4), Piece::new(Color::White, Kind::Rook)),
         (Point(2, 4), Piece::new(Color::Black, Kind::Rook)),
@@ -38,7 +36,7 @@ fn test_detect_check() {
 
 #[test]
 fn test_find_king() {
-    let mut board = create_test_board(vec![
+    let board = create_test_board(vec![
         (Point(3, 8), Piece::new(Color::White, Kind::King)),
         (Point(8, 3), Piece::new(Color::Black, Kind::King)),
     ]);
