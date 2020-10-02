@@ -74,6 +74,12 @@ impl Color {
             Color::Black => Color::White,
         }
     }
+    fn get_index(&self) -> usize {
+        match self {
+            Color::White => 0,
+            Color::Black => 1,
+        }
+    }
 }
 
 #[derive(Clone, PartialEq, Debug)]
