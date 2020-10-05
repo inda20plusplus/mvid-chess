@@ -36,7 +36,7 @@ impl Game {
     }
 
     pub fn turn(&mut self, source: Point, target: Point) -> TurnResult {
-        if let Some(_) = self.promotion {
+        if self.promotion.is_some() {
             return TurnResult::Failed;
         };
 
@@ -76,24 +76,24 @@ impl Game {
 
         if opponent_is_checked && opponent_can_move {
             self.color = self.color.inverse();
-            return TurnResult::Checked;
+            TurnResult::Checked
         } else if opponent_is_checked && !opponent_can_move {
-            return TurnResult::GameEnd(EndResult::Win(self.color.clone()));
+            TurnResult::GameEnd(EndResult::Win(self.color))
         } else if !opponent_is_checked && !opponent_can_move {
-            return TurnResult::GameEnd(EndResult::Tie);
+            TurnResult::GameEnd(EndResult::Tie)
         } else {
             self.color = self.color.inverse();
-            return TurnResult::Moved;
+            TurnResult::Moved
         }
     }
 
     pub fn promote(&mut self, kind: Kind) -> TurnResult {
-        let (source, target) = match self.promotion.clone() {
+        let (source, target) = match self.promotion {
             Some(points) => (points.0, points.1),
             None => return TurnResult::Failed,
         };
 
-        self.board.current[source.index()] = Some(Piece::new(self.color.clone(), kind));
+        self.board.current[source.index()] = Some(Piece::new(self.color, kind));
 
         self.promotion = None;
 
@@ -120,7 +120,7 @@ impl Game {
                 let point = Point(x, y);
                 if let Some(piece) = self.board.at_point(&point) {
                     if &piece.color == color {
-                        if let Some(_) = self.board.get_allowed_moves(&point) {
+                        if self.board.get_allowed_moves(&point).is_some() {
                             return true;
                         }
                     }
