@@ -1,6 +1,5 @@
 use super::tests::create_test_board;
 use super::{Color, Kind, Piece, Point};
-use std::collections::HashMap;
 
 #[test]
 fn test_move_to_empty_and_sets_has_moved() {
@@ -67,15 +66,11 @@ fn test_move_to_occupied_by_other_color() {
         })
     );
 
-    assert!(board
-        .graveyard
-        .get(&Color::Black)
-        .unwrap()
-        .contains(&Piece {
-            color: Color::Black,
-            kind: Kind::Pawn,
-            has_moved: false,
-        }));
+    assert!(board.graveyard[1].contains(&Piece {
+        color: Color::Black,
+        kind: Kind::Pawn,
+        has_moved: false,
+    }));
 }
 
 #[test]
@@ -85,12 +80,12 @@ fn test_move_to_occupied_by_other_color_empty_graveyard() {
         (Point(2, 1), Piece::new(Color::Black, Kind::Pawn)),
     ]);
 
-    board.graveyard = HashMap::new();
+    board.graveyard = [vec![], vec![]];
 
     board.move_piece(Point(1, 1), Point(2, 1));
 
-    assert!(board.graveyard.contains_key(&Color::Black));
-    assert!(!board.graveyard.contains_key(&Color::White));
+    assert_eq!(board.graveyard[0].len(), 0);
+    assert_eq!(board.graveyard[1].len(), 1);
 }
 
 #[test]

@@ -9,11 +9,10 @@ mod test_get_moves;
 
 use crate::pieces::{Kind, Piece};
 use crate::*;
-use std::collections::HashMap;
 
 pub struct Board {
     pub current: [Option<Piece>; 64],
-    pub graveyard: HashMap<Color, Vec<Piece>>,
+    pub graveyard: [Vec<Piece>; 2],
     pub height: std::ops::RangeInclusive<i8>,
     pub width: std::ops::RangeInclusive<i8>,
     pub enpassant: Option<[Point; 2]>,
@@ -55,9 +54,7 @@ impl Default for Board {
 
         Board {
             current: starting_board,
-            graveyard: vec![(Color::White, vec![]), (Color::Black, vec![])]
-                .into_iter()
-                .collect(),
+            graveyard: [Vec::new(), Vec::new()],
             height: (1..=8),
             width: (1..=8),
             enpassant: None,
@@ -149,8 +146,7 @@ impl Board {
             if target_piece.color == source_piece.color {
                 return false;
             } else {
-                let graveyard = self.graveyard.entry(target_piece.color).or_default();
-                graveyard.push(target_piece);
+                &mut self.add_to_graveyard(target_piece);
             }
         }
 
@@ -161,6 +157,10 @@ impl Board {
         self.current[source_index] = None;
 
         true
+    }
+
+    fn add_to_graveyard(&mut self, piece: Piece) {
+        self.graveyard[piece.color.get_index()].push(piece);
     }
 
     pub fn get_allowed_moves(&mut self, source: &Point) -> Option<Vec<Point>> {
