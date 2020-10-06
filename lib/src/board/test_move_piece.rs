@@ -116,3 +116,40 @@ fn test_move_to_source() {
 
     assert!(!board.move_piece(Point(1, 1), Point(1, 1)));
 }
+
+#[test]
+fn test_enpassant_gets_set() {
+    let mut board = create_test_board(vec![(Point(1, 1), Piece::new(Color::White, Kind::Pawn))]);
+
+    board.move_piece(Point(1, 1), Point(1, 3));
+    assert_eq!(board.enpassant, Some([Point(1, 2), Point(1, 3)]));
+}
+
+#[test]
+fn test_enpassant_gets_unset() {
+    let mut board = create_test_board(vec![(Point(1, 1), Piece::new(Color::White, Kind::Rook))]);
+
+    board.enpassant = Some([Point(8, 6), Point(8, 5)]);
+    board.move_piece(Point(1, 1), Point(1, 3));
+    assert_eq!(board.enpassant, None);
+}
+
+#[test]
+fn test_enpassant_removes_target_pawn() {
+    let mut board = create_test_board(vec![
+        (Point(1, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(1, 4), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
+        (Point(2, 4), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
+        (Point(7, 5), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
+        (Point(8, 5), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
+    ]);
+
+    board.enpassant = Some([Point(1, 3), Point(1, 4)]);
+    board.move_piece(Point(2, 4), Point(1, 3));
+    assert_eq!(board.at_point(&Point(1, 4)), None);
+
+    board.enpassant = Some([Point(8, 6), Point(8, 5)]);
+    board.move_piece(Point(7, 5), Point(8, 4));
+    assert_eq!(board.at_point(&Point(8, 5)), None);
+}

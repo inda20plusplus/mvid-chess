@@ -190,6 +190,24 @@ fn test_pawn_has_not_moved() {
 }
 
 #[test]
+fn test_enpassant() {
+    let mut board = create_test_board(vec![
+        (Point(1, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(1, 4), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
+        (Point(2, 4), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
+        (Point(7, 5), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
+        (Point(8, 5), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
+    ]);
+
+    board.enpassant = Some([Point(1, 3), Point(1, 4)]);
+    assert_eq!(board.get_allowed_moves(&Point(2, 4)), Some(vec![Point(2, 3), Point(1, 3)]));
+
+    board.enpassant = Some([Point(8, 4), Point(8, 5)]);
+    assert_eq!(board.get_allowed_moves(&Point(7, 5)), Some(vec![Point(7, 6), Point(8, 6)]));
+}
+
+#[test]
 fn test_cannot_unblock_king() {
     let mut board = create_test_board(vec![
         (Point(5, 1), Piece::new(Color::White, Kind::King)),
