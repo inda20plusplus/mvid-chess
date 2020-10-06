@@ -29,7 +29,7 @@ pub struct Game {
 impl Game {
     pub fn new() -> Self {
         Game {
-            board: Board::new(),
+            board: Board::default(),
             color: Color::White,
             promotion: None,
         }

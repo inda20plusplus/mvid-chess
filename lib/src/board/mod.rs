@@ -19,8 +19,8 @@ pub struct Board {
     enpassant: Option<[Point; 2]>,
 }
 
-impl Board {
-    pub fn new() -> Self {
+impl Default for Board {
+    fn default() -> Self {
         let mut starting_positions: Vec<(Point, Piece)> = vec![
             (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
             (Point(2, 1), Piece::new(Color::White, Kind::Knight)),
@@ -63,7 +63,9 @@ impl Board {
             enpassant: None,
         }
     }
+}
 
+impl Board {
     pub fn is_in_bounds(&self, point: &Point) -> bool {
         self.width.contains(&point.0) && self.height.contains(&point.1)
     }
