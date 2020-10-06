@@ -16,7 +16,7 @@ pub struct Board {
     pub graveyard: HashMap<Color, Vec<Piece>>,
     pub height: std::ops::RangeInclusive<i8>,
     pub width: std::ops::RangeInclusive<i8>,
-    enpassant: Option<[Point; 2]>,
+    pub enpassant: Option<[Point; 2]>,
 }
 
 impl Default for Board {
