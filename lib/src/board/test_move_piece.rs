@@ -153,3 +153,66 @@ fn test_enpassant_removes_target_pawn() {
     board.move_piece(Point(7, 5), Point(8, 4));
     assert_eq!(board.at_point(&Point(8, 5)), None);
 }
+
+#[test]
+fn test_castling_king_side() {
+    let mut board = create_test_board(vec![
+        (Point(5, 1), Piece::new(Color::White, Kind::King)),
+        (Point(8, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(5, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(8, 8), Piece::new(Color::Black, Kind::Rook)),
+    ]);
+
+    board.move_piece(Point(5, 1), Point(7, 1));
+
+    let rook = Piece {color: Color::White, kind: Kind::Rook, has_moved: true};
+    let king = Piece {color: Color::White, kind: Kind::King, has_moved: true};
+    assert_eq!(board.at_point(&Point(6, 1)), Some(rook));
+    assert_eq!(board.at_point(&Point(7, 1)), Some(king));
+
+    board.move_piece(Point(5, 8), Point(7, 8));
+
+    let rook = Piece {color: Color::Black, kind: Kind::Rook, has_moved: true};
+    let king = Piece {color: Color::Black, kind: Kind::King, has_moved: true};
+    assert_eq!(board.at_point(&Point(6, 8)), Some(rook));
+    assert_eq!(board.at_point(&Point(7, 8)), Some(king));
+}
+
+#[test]
+fn test_castling_queen_side() {
+    let mut board = create_test_board(vec![
+        (Point(5, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(5, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(1, 8), Piece::new(Color::Black, Kind::Rook)),
+    ]);
+
+    board.move_piece(Point(5, 1), Point(3, 1));
+
+    let rook = Piece {color: Color::White, kind: Kind::Rook, has_moved: true};
+    let king = Piece {color: Color::White, kind: Kind::King, has_moved: true};
+    assert_eq!(board.at_point(&Point(4, 1)), Some(rook));
+    assert_eq!(board.at_point(&Point(3, 1)), Some(king));
+
+    board.move_piece(Point(5, 8), Point(7, 8));
+
+    let rook = Piece {color: Color::Black, kind: Kind::Rook, has_moved: true};
+    let king = Piece {color: Color::Black, kind: Kind::King, has_moved: true};
+    assert_eq!(board.at_point(&Point(4, 8)), Some(rook));
+    assert_eq!(board.at_point(&Point(3, 8)), Some(king));
+}
+
+#[test]
+fn test_castling_obstructed() {
+    let mut board = create_test_board(vec![
+        (Point(5, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(2, 1), Piece::new(Color::Black, Kind::Knight)),
+        (Point(5, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(8, 8), Piece::new(Color::Black, Kind::Rook)),
+        (Point(7, 8), Piece::new(Color::White, Kind::Knight)),
+    ]);
+
+    assert!(!board.move_piece(Point(5, 1), Point(3, 1)));
+    assert!(!board.move_piece(Point(5, 8), Point(7, 8)));
+}
