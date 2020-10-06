@@ -12,6 +12,7 @@ pub fn create_test_board(positions: Vec<(Point, Piece)>) -> Board {
             .collect(),
         height: (1..=8),
         width: (1..=8),
+        enpassant: None,
     }
 }
 
