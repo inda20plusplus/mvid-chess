@@ -283,4 +283,8 @@ impl Board {
     fn is_pawn_double_move(&self, source: &Point, target: &Point) -> bool {
         false
     }
+
+    fn is_castling(&self, source: &Point, target: &Point) -> bool {
+        false
+    }
 }
