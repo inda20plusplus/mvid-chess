@@ -6,6 +6,7 @@ use ggez::graphics;
 use ggez::nalgebra as na;
 use std::path;
 mod screen;
+mod network;
 pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
 #[derive(Debug, Clone)]
 pub enum Piece {
@@ -56,12 +57,15 @@ pub struct MainState {
     pub state: State,
     pub help: Overlay,
     pub selected: Selected,
+    pub connection: network::Connection,
+    pub my_color: Color
 }
 #[derive(Clone)]
 pub enum Selected {
     Position(Position),
     None,
 }
+pub const MYCOLOR:Color = Color::Black;
 impl MainState {
     fn new() -> ggez::GameResult<MainState> {
         let mut s = MainState {
@@ -74,6 +78,8 @@ impl MainState {
             },
             help: Overlay::None,
             selected: Selected::None,
+            connection: network::Connection::init(MYCOLOR),
+            my_color: MYCOLOR
         };
         s.parse();
         Ok(s)
@@ -159,6 +165,7 @@ fn get_element(point: &mut (f32, f32)) -> Element {
 
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut ggez::Context) -> ggez::GameResult {
+        if self.my_color != self.turn {self.connection.get();};
         Ok(())
     }
     fn mouse_button_down_event(
@@ -181,32 +188,36 @@ impl event::EventHandler for MainState {
                     }
                 }
                 Selected::Position(position) => {
-                    let state = self
-                        .game
-                        .turn(position.clone().translate(), pos.translate());
+                    if self.turn == self.my_color{
+                        
+                        let state = self
+                            .game
+                            .turn(position.clone().translate(), pos.translate());
 
-                    match state {
-                        game::TurnResult::Promotion => {
-                            self.state = State::Playing {
-                                promotion: true,
-                                check: false,
+                        match state {
+                            game::TurnResult::Promotion => {
+                                self.state = State::Playing {
+                                    promotion: true,
+                                    check: false,
+                                }
                             }
-                        }
-                        game::TurnResult::Checked => {
-                            self.state = State::Playing {
-                                promotion: false,
-                                check: true,
+                            game::TurnResult::Checked => {
+                                self.state = State::Playing {
+                                    promotion: false,
+                                    check: true,
+                                }
                             }
-                        }
-                        game::TurnResult::Moved => {
-                            self.state = State::Playing {
-                                promotion: false,
-                                check: false,
+                            game::TurnResult::Moved => {
+                                self.state = State::Playing {
+                                    promotion: false,
+                                    check: false,
+                                }
                             }
-                        }
-                        game::TurnResult::GameEnd(_) => self.state = State::Checkmate,
-                        _ => (),
-                    };
+                            game::TurnResult::GameEnd(_) => self.state = State::Checkmate,
+                            _ => (),
+                        };
+                        self.connection.push();
+                    }
                     self.parse();
                     self.selected = Selected::None;
                     self.help = Overlay::None;
