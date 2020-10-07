@@ -139,10 +139,38 @@ fn test_enpassant_removes_target_pawn() {
     let mut board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 8), Piece::new(Color::Black, Kind::King)),
-        (Point(1, 4), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
-        (Point(2, 4), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
-        (Point(7, 5), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
-        (Point(8, 5), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
+        (
+            Point(1, 4),
+            Piece {
+                color: Color::White,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
+        (
+            Point(2, 4),
+            Piece {
+                color: Color::Black,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
+        (
+            Point(7, 5),
+            Piece {
+                color: Color::White,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
+        (
+            Point(8, 5),
+            Piece {
+                color: Color::Black,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
     ]);
 
     board.enpassant = Some([Point(1, 3), Point(1, 4)]);
@@ -165,15 +193,31 @@ fn test_castling_king_side() {
 
     board.move_piece(Point(5, 1), Point(7, 1));
 
-    let rook = Piece {color: Color::White, kind: Kind::Rook, has_moved: true};
-    let king = Piece {color: Color::White, kind: Kind::King, has_moved: true};
+    let rook = Piece {
+        color: Color::White,
+        kind: Kind::Rook,
+        has_moved: true,
+    };
+    let king = Piece {
+        color: Color::White,
+        kind: Kind::King,
+        has_moved: true,
+    };
     assert_eq!(board.at_point(&Point(6, 1)), Some(rook));
     assert_eq!(board.at_point(&Point(7, 1)), Some(king));
 
     board.move_piece(Point(5, 8), Point(7, 8));
 
-    let rook = Piece {color: Color::Black, kind: Kind::Rook, has_moved: true};
-    let king = Piece {color: Color::Black, kind: Kind::King, has_moved: true};
+    let rook = Piece {
+        color: Color::Black,
+        kind: Kind::Rook,
+        has_moved: true,
+    };
+    let king = Piece {
+        color: Color::Black,
+        kind: Kind::King,
+        has_moved: true,
+    };
     assert_eq!(board.at_point(&Point(6, 8)), Some(rook));
     assert_eq!(board.at_point(&Point(7, 8)), Some(king));
 }
@@ -189,15 +233,31 @@ fn test_castling_queen_side() {
 
     board.move_piece(Point(5, 1), Point(3, 1));
 
-    let rook = Piece {color: Color::White, kind: Kind::Rook, has_moved: true};
-    let king = Piece {color: Color::White, kind: Kind::King, has_moved: true};
+    let rook = Piece {
+        color: Color::White,
+        kind: Kind::Rook,
+        has_moved: true,
+    };
+    let king = Piece {
+        color: Color::White,
+        kind: Kind::King,
+        has_moved: true,
+    };
     assert_eq!(board.at_point(&Point(4, 1)), Some(rook));
     assert_eq!(board.at_point(&Point(3, 1)), Some(king));
 
     board.move_piece(Point(5, 8), Point(7, 8));
 
-    let rook = Piece {color: Color::Black, kind: Kind::Rook, has_moved: true};
-    let king = Piece {color: Color::Black, kind: Kind::King, has_moved: true};
+    let rook = Piece {
+        color: Color::Black,
+        kind: Kind::Rook,
+        has_moved: true,
+    };
+    let king = Piece {
+        color: Color::Black,
+        kind: Kind::King,
+        has_moved: true,
+    };
     assert_eq!(board.at_point(&Point(4, 8)), Some(rook));
     assert_eq!(board.at_point(&Point(3, 8)), Some(king));
 }

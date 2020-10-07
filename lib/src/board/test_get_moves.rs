@@ -194,10 +194,38 @@ fn test_enpassant() {
     let mut board = create_test_board(vec![
         (Point(1, 1), Piece::new(Color::White, Kind::King)),
         (Point(1, 8), Piece::new(Color::Black, Kind::King)),
-        (Point(1, 4), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
-        (Point(2, 4), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
-        (Point(7, 5), Piece {color: Color::White, kind: Kind::Pawn, has_moved: true}),
-        (Point(8, 5), Piece {color: Color::Black, kind: Kind::Pawn, has_moved: true}),
+        (
+            Point(1, 4),
+            Piece {
+                color: Color::White,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
+        (
+            Point(2, 4),
+            Piece {
+                color: Color::Black,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
+        (
+            Point(7, 5),
+            Piece {
+                color: Color::White,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
+        (
+            Point(8, 5),
+            Piece {
+                color: Color::Black,
+                kind: Kind::Pawn,
+                has_moved: true,
+            },
+        ),
     ]);
 
     board.enpassant = Some([Point(1, 3), Point(1, 4)]);
@@ -392,12 +420,7 @@ fn test_castling_with_danger() {
 
     board.move_piece(Point(4, 8), Point(5, 8));
     let possible_moves = board.get_allowed_moves(&Point(5, 1)).unwrap();
-    let allowed_moves = vec![
-        Point(4, 2),
-        Point(4, 1),
-        Point(6, 2),
-        Point(6, 1),
-    ];
+    let allowed_moves = vec![Point(4, 2), Point(4, 1), Point(6, 2), Point(6, 1)];
 
     assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
 }
