@@ -1,4 +1,7 @@
-use crate::{Move, Point};
+use crate::Point;
+
+#[derive(Clone, PartialEq, Debug)]
+pub struct Move(pub Point, pub bool);
 
 pub const ALL: [Move; 16] = [
     Move(Point(-1, 1), true),

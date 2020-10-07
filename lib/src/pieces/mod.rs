@@ -1,9 +1,9 @@
-use crate::{Color, Move};
-
+pub mod moves;
 #[cfg(test)]
 mod tests;
 
-pub mod moves;
+use crate::Color;
+use moves::Move;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Piece {

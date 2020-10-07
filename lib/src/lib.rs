@@ -42,8 +42,6 @@ impl Color {
     }
 }
 
-#[derive(Clone, PartialEq, Debug)]
-pub struct Move(Point, bool);
 
 #[cfg(test)]
 mod tests {
