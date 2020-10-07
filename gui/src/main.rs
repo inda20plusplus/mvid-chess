@@ -5,8 +5,8 @@ use ggez::event;
 use ggez::graphics;
 use ggez::nalgebra as na;
 use std::path;
-mod screen;
 mod network;
+mod screen;
 pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
 #[derive(Debug, Clone)]
 pub enum Piece {
@@ -58,14 +58,14 @@ pub struct MainState {
     pub help: Overlay,
     pub selected: Selected,
     pub connection: network::Connection,
-    pub my_color: Color
+    pub my_color: Color,
 }
 #[derive(Clone)]
 pub enum Selected {
     Position(Position),
     None,
 }
-pub const MYCOLOR:Color = Color::Black;
+pub const MYCOLOR: Color = Color::Black;
 impl MainState {
     fn new() -> ggez::GameResult<MainState> {
         let mut s = MainState {
@@ -79,7 +79,7 @@ impl MainState {
             help: Overlay::None,
             selected: Selected::None,
             connection: network::Connection::init(MYCOLOR),
-            my_color: MYCOLOR
+            my_color: MYCOLOR,
         };
         s.parse();
         Ok(s)
@@ -165,7 +165,9 @@ fn get_element(point: &mut (f32, f32)) -> Element {
 
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut ggez::Context) -> ggez::GameResult {
-        if self.my_color != self.turn {self.connection.get();};
+        if self.my_color != self.turn {
+            self.connection.get();
+        };
         Ok(())
     }
     fn mouse_button_down_event(
@@ -188,8 +190,7 @@ impl event::EventHandler for MainState {
                     }
                 }
                 Selected::Position(position) => {
-                    if self.turn == self.my_color{
-                        
+                    if self.turn == self.my_color {
                         let state = self
                             .game
                             .turn(position.clone().translate(), pos.translate());
