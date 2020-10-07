@@ -291,3 +291,107 @@ fn test_piece_must_protect_king_when_checked() {
         vec![Point(8, 4), Point(6, 4)].as_sorted()
     );
 }
+
+#[test]
+fn test_castling_moves() {
+    let mut board = create_test_board(vec![
+        (Point(5, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(8, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(5, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(1, 8), Piece::new(Color::Black, Kind::Rook)),
+        (Point(8, 8), Piece::new(Color::Black, Kind::Rook)),
+    ]);
+
+    let possible_moves = board.get_allowed_moves(&Point(5, 1)).unwrap();
+    let allowed_moves = vec![
+        Point(3, 1),
+        Point(7, 1),
+        Point(4, 2),
+        Point(5, 2),
+        Point(6, 2),
+        Point(6, 1),
+        Point(4, 1),
+    ];
+    assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
+
+    let possible_moves = board.get_allowed_moves(&Point(5, 8)).unwrap();
+    let allowed_moves = vec![
+        Point(3, 8),
+        Point(7, 8),
+        Point(4, 7),
+        Point(5, 7),
+        Point(6, 7),
+        Point(6, 8),
+        Point(4, 8),
+    ];
+    assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
+}
+
+#[test]
+fn test_castling_obstructed() {
+    let mut board = create_test_board(vec![
+        (Point(5, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(2, 1), Piece::new(Color::Black, Kind::Bishop)),
+        (Point(8, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(5, 8), Piece::new(Color::Black, Kind::King)),
+        (Point(1, 8), Piece::new(Color::Black, Kind::Rook)),
+        (Point(8, 8), Piece::new(Color::Black, Kind::Rook)),
+        (Point(2, 8), Piece::new(Color::Black, Kind::Bishop)),
+    ]);
+
+    let possible_moves = board.get_allowed_moves(&Point(5, 1)).unwrap();
+    let allowed_moves = vec![
+        Point(7, 1),
+        Point(4, 2),
+        Point(5, 2),
+        Point(6, 2),
+        Point(6, 1),
+        Point(4, 1),
+    ];
+    assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
+
+    let possible_moves = board.get_allowed_moves(&Point(5, 8)).unwrap();
+    let allowed_moves = vec![
+        Point(7, 8),
+        Point(4, 7),
+        Point(5, 7),
+        Point(6, 7),
+        Point(6, 8),
+        Point(4, 8),
+    ];
+    assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
+}
+
+#[test]
+fn test_castling_with_danger() {
+    let mut board = create_test_board(vec![
+        (Point(5, 1), Piece::new(Color::White, Kind::King)),
+        (Point(1, 1), Piece::new(Color::White, Kind::Rook)),
+        (Point(4, 8), Piece::new(Color::Black, Kind::Rook)),
+        (Point(8, 1), Piece::new(Color::White, Kind::Rook)),
+    ]);
+
+    let possible_moves = board.get_allowed_moves(&Point(5, 1)).unwrap();
+    let allowed_moves = vec![
+        Point(7, 1),
+        Point(4, 2),
+        Point(5, 2),
+        Point(6, 2),
+        Point(6, 1),
+        Point(4, 1),
+    ];
+    assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
+
+    board.move_piece(Point(4, 8), Point(5, 8));
+    let possible_moves = board.get_allowed_moves(&Point(5, 1)).unwrap();
+    let allowed_moves = vec![
+        Point(4, 2),
+        Point(4, 1),
+        Point(6, 2),
+        Point(6, 1),
+    ];
+
+    assert_eq!(possible_moves.as_sorted(), allowed_moves.as_sorted());
+}
