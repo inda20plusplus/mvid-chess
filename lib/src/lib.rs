@@ -2,6 +2,8 @@ pub mod board;
 pub mod game;
 pub mod pieces;
 
+use pieces::Kind;
+
 #[derive(Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, Debug)]
 pub struct Point(pub i8, pub i8);
 
@@ -42,6 +44,12 @@ impl Color {
     }
 }
 
+pub enum Move {
+    Standard(Point, Point),
+    Promotion(Point, Point, Kind),
+    KingsideCastling,
+    QueensideCastling,
+}
 
 #[cfg(test)]
 mod tests {
