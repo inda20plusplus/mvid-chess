@@ -201,10 +201,16 @@ fn test_enpassant() {
     ]);
 
     board.enpassant = Some([Point(1, 3), Point(1, 4)]);
-    assert_eq!(board.get_allowed_moves(&Point(2, 4)), Some(vec![Point(2, 3), Point(1, 3)]));
+    assert_eq!(
+        board.get_allowed_moves(&Point(2, 4)).unwrap().as_sorted(),
+        vec![Point(2, 3), Point(1, 3)].as_sorted()
+    );
 
     board.enpassant = Some([Point(8, 4), Point(8, 5)]);
-    assert_eq!(board.get_allowed_moves(&Point(7, 5)), Some(vec![Point(7, 6), Point(8, 6)]));
+    assert_eq!(
+        board.get_allowed_moves(&Point(7, 5)).unwrap().as_sorted(),
+        vec![Point(7, 6), Point(8, 6)].as_sorted()
+    );
 }
 
 #[test]
