@@ -275,4 +275,12 @@ impl Board {
 
         moves
     }
+
+    fn is_enpassant_capture(&self, source: &Point, target: &Point) -> bool {
+        false
+    }
+
+    fn is_pawn_double_move(&self, source: &Point, target: &Point) -> bool {
+        false
+    }
 }
