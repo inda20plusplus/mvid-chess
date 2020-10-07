@@ -20,10 +20,10 @@ fn test_get_moves() {
     assert_eq!(
         piece.get_moves(),
         vec![
-            Move(Point(0, 1), true),
-            Move(Point(-1, 0), true),
-            Move(Point(1, 0), true),
-            Move(Point(0, -1), true),
+            DirectionalMove(Point(0, 1), true),
+            DirectionalMove(Point(-1, 0), true),
+            DirectionalMove(Point(1, 0), true),
+            DirectionalMove(Point(0, -1), true),
         ]
     )
 }

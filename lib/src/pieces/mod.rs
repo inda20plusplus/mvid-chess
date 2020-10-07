@@ -3,7 +3,7 @@ pub mod moves;
 mod tests;
 
 use crate::Color;
-use moves::Move;
+use moves::DirectionalMove;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Piece {
@@ -21,7 +21,7 @@ impl Piece {
         }
     }
 
-    pub fn get_moves(&self) -> Vec<Move> {
+    pub fn get_moves(&self) -> Vec<DirectionalMove> {
         match self.kind {
             Kind::King => moves::KING.to_vec(),
             Kind::Queen => moves::QUEEN.to_vec(),
