@@ -35,6 +35,30 @@ impl Game {
         }
     }
 
+    pub fn turn_from_move(&mut self, r#move: Move) -> TurnResult {
+        match r#move {
+            Move::Standard(source, target) => self.turn(source, target),
+            Move::KingsideCastling => {
+                let king_pos = self.board.find_king(&self.color);
+                let target_pos = Point(king_pos.0 + 2, king_pos.1);
+                self.turn(king_pos, target_pos)
+            }
+            Move::QueensideCastling => {
+                let king_pos = self.board.find_king(&self.color);
+                let target_pos = Point(king_pos.0 - 2, king_pos.1);
+                self.turn(king_pos, target_pos)
+            }
+            Move::Promotion(source, target, kind) => {
+                let result = self.turn(source, target);
+                if result == TurnResult::Promotion {
+                    self.promote(kind)
+                } else {
+                    result
+                }
+            }
+        }
+    }
+
     pub fn turn(&mut self, source: Point, target: Point) -> TurnResult {
         if self.promotion.is_some() {
             return TurnResult::Failed;
