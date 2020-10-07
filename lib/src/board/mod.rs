@@ -70,7 +70,7 @@ impl Board {
         self.width.contains(&point.0) && self.height.contains(&point.1)
     }
 
-    fn find_king(&self, color: &Color) -> Point {
+    pub fn find_king(&self, color: &Color) -> Point {
         for x in self.width.clone() {
             for y in self.height.clone() {
                 let current_point = Point(x, y);
