@@ -10,9 +10,9 @@ use std::sync::{
     Arc,
 };
 
-pub fn rx_handler(stream: TcpStream, globalval: Arc<Mutex<Vec<u8>>>){
+pub fn rx_handler(stream: TcpStream, rx: mpsc::Sender ) {
     ()
 }   
-pub fn tx_handler(stream: TcpStream, globalval: Arc<Mutex<Vec<u8>>>){
+pub fn tx_handler(stream: TcpStream, tx: mpsc::Receiver){
     ()
 }

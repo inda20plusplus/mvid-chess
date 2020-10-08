@@ -7,6 +7,7 @@ use ggez::nalgebra as na;
 use std::path;
 mod network;
 mod screen;
+use std::sync::{Arc, Mutex};
 pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
 #[derive(Debug, Clone)]
 pub enum Piece {
@@ -49,6 +50,9 @@ pub enum Color {
     Black,
     White,
     None,
+}
+pub struct StatePtr {
+    pub state: Arc<Mutex<MainState>>
 }
 pub struct MainState {
     pub game: game::Game,

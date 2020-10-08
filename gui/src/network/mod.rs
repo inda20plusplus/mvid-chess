@@ -8,6 +8,7 @@ use std::time::Duration;
 use std::sync::{
     Mutex,
     Arc,
+    mpsc,
 };
 mod handler;
 pub struct Connection {
@@ -25,12 +26,10 @@ impl Connection {
                         Ok(mut stream) => {
                             let mut rx_stream = stream;
                             let mut tx_stream = rx_stream.try_clone().unwrap();
-                            let mut tx_thread = Arc::new(Mutex::new(vec![]));
-                            let mut rx_thread = Arc::new(Mutex::new(vec![]));
-                            let mut rx = rx_thread.clone();
-                            let mut tx = tx_thread.clone();
+                            let (tx_thread, rx) = mpsc::channel();
+                            let (tx, rx_thread) = mpsc::channel();
                             std::thread::spawn(|| {
-                                handler::rx_handler(rx_stream, rx_thread);
+                                handler::rx_handler(rx_stream, tx_thread);
                             });
                             std::thread::spawn(|| {
                                 handler::tx_handler(rx_stream, rx_thread);
