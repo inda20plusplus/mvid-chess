@@ -169,9 +169,9 @@ fn get_element(point: &mut (f32, f32)) -> Element {
 
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut ggez::Context) -> ggez::GameResult {
-        if self.my_color != self.turn {
-            self.connection.get();
-        };
+        //if self.my_color != self.turn {
+        //    self.connection.get();
+        //};
         Ok(())
     }
     fn mouse_button_down_event(
@@ -225,7 +225,7 @@ impl event::EventHandler for MainState {
                             game::TurnResult::GameEnd(_) => self.state = State::Checkmate,
                             _ => (),
                         };
-                        self.connection.push();
+                        //self.connection.push();
                     }
                     self.parse();
                     self.selected = Selected::None;

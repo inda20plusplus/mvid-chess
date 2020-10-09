@@ -28,13 +28,15 @@ impl Connection {
                             let mut tx_stream = rx_stream.try_clone().unwrap();
                             let rx = Arc::new(Mutex::new(vec![]));
                             let tx = Arc::new(Mutex::new(vec![]));
+                            let nrx = rx.clone();
+                            let ntx = tx.clone();
                             std::thread::spawn(|| {
-                                handler::rx_handler(rx_stream, tx.clone());
+                                handler::rx_handler(rx_stream, nrx);
                             });
                             std::thread::spawn(|| {
-                                handler::tx_handler(rx_stream, rx.clone());
+                                handler::tx_handler(tx_stream, ntx);
                             });
-                            return Connection {tx, rx};
+                            return Connection{rx, tx};
                         }
                         Err(e) => {
                             panic!("Error: {}", e);
@@ -48,11 +50,13 @@ impl Connection {
                     let mut rx_stream = tx_stream.try_clone().unwrap();
                     let rx = Arc::new(Mutex::new(vec![]));
                     let tx = Arc::new(Mutex::new(vec![]));
+                    let nrx = rx.clone();
+                    let ntx = tx.clone();
                     std::thread::spawn(|| {
-                        handler::rx_handler(rx_stream, tx.clone());
+                        handler::rx_handler(rx_stream, nrx);
                     });
                     std::thread::spawn(|| {
-                        handler::tx_handler(rx_stream, rx.clone());
+                        handler::tx_handler(tx_stream, ntx);
                     });
                     return Connection {tx, rx};
                 }
@@ -64,15 +68,5 @@ impl Connection {
         }
         panic!("error");
     }
-    pub fn get(&mut self) {
-        let mut data = [0; 1];
-        match self.r_stream.read(&mut data) {
-            Ok(val) => println!("got move"),
-            Err(e) => println!("nothing"),
-        }
-    }
-    pub fn push(&mut self) {
-        let mut data = [1; 1];
-        let mut val: usize = self.w_stream.write(&mut data).unwrap();
-    }
+    
 }

@@ -10,13 +10,32 @@ use std::sync::{
     Arc,
 };
 
-pub fn rx_handler(stream: TcpStream, rx:  Arc<Mutex<Vec<u8>>>) {
-    ()
+pub fn rx_handler(mut stream: TcpStream, rx:  Arc<Mutex<Vec<u8>>>) {
+    loop{
+        std::thread::sleep(Duration::from_millis(300));
+        let mut buffer = &mut [0; 1];
+        stream.read(buffer);
+        let mut val = rx.lock().unwrap();
+        val.push(buffer[0]);
+        stream.write(&[3]);
+    }
 }   
-pub fn tx_handler(stream: TcpStream, tx: Arc<Mutex<Vec<u8>>>){
+pub fn tx_handler(mut stream: TcpStream, tx: Arc<Mutex<Vec<u8>>>){
     loop{
         std::thread::sleep(Duration::from_millis(300));
         let mut val = tx.lock().unwrap();
-        println!("{:?}", val);
+        if val.len() > 0{
+            stream.write(&[1, 0]);
+
+            for i in 0..val.len(){ 
+                stream.write(&[val[i]]);
+            }
+            let mut buffer = &mut [0; 1];
+            stream.read(buffer);
+            if buffer[0] != 3{
+                panic!("bad return: {:?}", buffer);
+            }
+        }
+        val.clear();
     }
 }
