@@ -34,6 +34,12 @@ pub enum Overlay {
     },
     None,
 }
+fn to_byte(a:u8, b:u8)->u8{
+    a*8+b
+}
+fn from_byte(c:u8)->(u8,u8){
+   (c/8, c%8)
+}
 #[derive(Debug, Clone, Copy)]
 pub struct Position(usize, usize);
 impl Position {
@@ -42,6 +48,12 @@ impl Position {
     }
     pub fn new(pos: &chess::Point) -> Self {
         Position((pos.0 - 1) as usize, (pos.1 - 1) as usize)
+    }
+    pub fn tbyte(&self) -> u8 {
+        (self.0*8+self.1) as u8 
+    }
+    pub fn fbyte(c: u8) -> Self {
+        Position((c/8) as usize, (c%8) as usize)
     }
 }
 pub struct Board(Vec<(Piece, Position)>);
@@ -169,9 +181,19 @@ fn get_element(point: &mut (f32, f32)) -> Element {
 
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut ggez::Context) -> ggez::GameResult {
-        //if self.my_color != self.turn {
-        //    self.connection.get();
-        //};
+        if self.my_color != self.turn {
+            let mut v = self.connection.rx.lock().unwrap();
+            if v.len()>=4{
+                let mut a =  Position::fbyte(v[2]);
+                let mut b = Position::fbyte(v[3]);
+                self.game.turn(a.translate(), b.translate());
+                v.clear();
+                v.push(240);
+                self.selected = Selected::None;
+                self.help = Overlay::None;
+            };
+        };
+        self.parse();
         Ok(())
     }
     fn mouse_button_down_event(
@@ -181,10 +203,6 @@ impl event::EventHandler for MainState {
         x: f32,
         y: f32,
     ) {
-        {
-            let mut val = self.connection.tx.lock().unwrap();
-            val.push(1);
-        };
         match get_element(&mut (x, y)) {
             Element::Tile(mut pos) => match self.selected.clone() {
                 Selected::None => {
@@ -217,6 +235,11 @@ impl event::EventHandler for MainState {
                                 }
                             }
                             game::TurnResult::Moved => {
+                                {
+                                    let mut v = self.connection.tx.lock().unwrap();
+                                    v.push(position.tbyte());
+                                    v.push(pos.tbyte());
+                                };
                                 self.state = State::Playing {
                                     promotion: false,
                                     check: false,
