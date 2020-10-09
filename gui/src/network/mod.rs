@@ -12,8 +12,8 @@ use std::sync::{
 };
 mod handler;
 pub struct Connection {
-    tx: Arc<Mutex<[]>>,
-    rx: Arc<Mutex<Vec<u8>>>
+    pub tx: Arc<Mutex<Vec<u8>>>,
+    pub rx: Arc<Mutex<Vec<u8>>>
 }
 impl Connection {
     pub fn init(color: Color) -> Self {
@@ -26,13 +26,13 @@ impl Connection {
                         Ok(mut stream) => {
                             let mut rx_stream = stream;
                             let mut tx_stream = rx_stream.try_clone().unwrap();
-                            let (tx_thread, rx) = mpsc::channel();
-                            let (tx, rx_thread) = mpsc::channel();
+                            let rx = Arc::new(Mutex::new(vec![]));
+                            let tx = Arc::new(Mutex::new(vec![]));
                             std::thread::spawn(|| {
-                                handler::rx_handler(rx_stream, tx_thread);
+                                handler::rx_handler(rx_stream, tx.clone());
                             });
                             std::thread::spawn(|| {
-                                handler::tx_handler(rx_stream, rx_thread);
+                                handler::tx_handler(rx_stream, rx.clone());
                             });
                             return Connection {tx, rx};
                         }
@@ -46,15 +46,13 @@ impl Connection {
                 Ok(mut stream) => {
                     let mut tx_stream = stream;
                     let mut rx_stream = tx_stream.try_clone().unwrap();
-                    let mut tx_thread = Arc::new(Mutex::new(vec![]));
-                    let mut rx_thread = Arc::new(Mutex::new(vec![]));
-                    let mut rx = rx_thread.clone();
-                    let mut tx = tx_thread.clone();
+                    let rx = Arc::new(Mutex::new(vec![]));
+                    let tx = Arc::new(Mutex::new(vec![]));
                     std::thread::spawn(|| {
-                        handler::rx_handler(rx_stream, rx_thread);
+                        handler::rx_handler(rx_stream, tx.clone());
                     });
                     std::thread::spawn(|| {
-                        handler::tx_handler(rx_stream, rx_thread);
+                        handler::tx_handler(rx_stream, rx.clone());
                     });
                     return Connection {tx, rx};
                 }

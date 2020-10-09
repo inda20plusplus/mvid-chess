@@ -10,9 +10,13 @@ use std::sync::{
     Arc,
 };
 
-pub fn rx_handler(stream: TcpStream, rx: mpsc::Sender ) {
+pub fn rx_handler(stream: TcpStream, rx:  Arc<Mutex<Vec<u8>>>) {
     ()
 }   
-pub fn tx_handler(stream: TcpStream, tx: mpsc::Receiver){
-    ()
+pub fn tx_handler(stream: TcpStream, tx: Arc<Mutex<Vec<u8>>>){
+    loop{
+        std::thread::sleep(Duration::from_millis(300));
+        let mut val = tx.lock().unwrap();
+        println!("{:?}", val);
+    }
 }

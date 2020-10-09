@@ -181,6 +181,10 @@ impl event::EventHandler for MainState {
         x: f32,
         y: f32,
     ) {
+        {
+            let mut val = self.connection.tx.lock().unwrap();
+            val.push(1);
+        };
         match get_element(&mut (x, y)) {
             Element::Tile(mut pos) => match self.selected.clone() {
                 Selected::None => {
