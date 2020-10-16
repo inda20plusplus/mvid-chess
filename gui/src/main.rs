@@ -5,7 +5,12 @@ use ggez::event;
 use ggez::graphics;
 use ggez::nalgebra as na;
 use std::path;
+mod network;
 mod screen;
+use std::env;
+
+use std::sync::{Arc, Mutex};
+use std::time::Duration;
 pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
 #[derive(Debug, Clone)]
 pub enum Piece {
@@ -32,6 +37,12 @@ pub enum Overlay {
     },
     None,
 }
+fn to_byte(a: u8, b: u8) -> u8 {
+    a * 8 + b
+}
+fn from_byte(c: u8) -> (u8, u8) {
+    (c / 8, c % 8)
+}
 #[derive(Debug, Clone, Copy)]
 pub struct Position(usize, usize);
 impl Position {
@@ -41,6 +52,12 @@ impl Position {
     pub fn new(pos: &chess::Point) -> Self {
         Position((pos.0 - 1) as usize, (pos.1 - 1) as usize)
     }
+    pub fn tbyte(&self) -> u8 {
+        (self.0 * 8 + self.1) as u8
+    }
+    pub fn fbyte(c: u8) -> Self {
+        Position((c / 8) as usize, (c % 8) as usize)
+    }
 }
 pub struct Board(Vec<(Piece, Position)>);
 #[derive(PartialEq, Clone, Debug)]
@@ -49,6 +66,9 @@ pub enum Color {
     White,
     None,
 }
+pub struct StatePtr {
+    pub state: Arc<Mutex<MainState>>,
+}
 pub struct MainState {
     pub game: game::Game,
     pub board: Board,
@@ -56,6 +76,8 @@ pub struct MainState {
     pub state: State,
     pub help: Overlay,
     pub selected: Selected,
+    pub connection: network::Connection,
+    pub my_color: Color,
 }
 #[derive(Clone)]
 pub enum Selected {
@@ -63,7 +85,7 @@ pub enum Selected {
     None,
 }
 impl MainState {
-    fn new() -> ggez::GameResult<MainState> {
+    fn new(MYCOLOR: Color) -> ggez::GameResult<MainState> {
         let mut s = MainState {
             game: game::Game::new(),
             board: Board(vec![]),
@@ -74,6 +96,8 @@ impl MainState {
             },
             help: Overlay::None,
             selected: Selected::None,
+            connection: network::Connection::init(MYCOLOR.clone()),
+            my_color: MYCOLOR.clone(),
         };
         s.parse();
         Ok(s)
@@ -159,6 +183,19 @@ fn get_element(point: &mut (f32, f32)) -> Element {
 
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut ggez::Context) -> ggez::GameResult {
+        std::thread::sleep(Duration::from_millis(100));
+        if self.my_color != self.turn {
+            let mut v = self.connection.rx.lock().unwrap();
+            if v.len() >= 2 {
+                let mut a = Position::fbyte(v[0]);
+                let mut b = Position::fbyte(v[1]);
+                self.game.turn(a.translate(), b.translate());
+                v.clear();
+                self.selected = Selected::None;
+                self.help = Overlay::None;
+            };
+        };
+        self.parse();
         Ok(())
     }
     fn mouse_button_down_event(
@@ -181,32 +218,40 @@ impl event::EventHandler for MainState {
                     }
                 }
                 Selected::Position(position) => {
-                    let state = self
-                        .game
-                        .turn(position.clone().translate(), pos.translate());
+                    if self.turn == self.my_color {
+                        let state = self
+                            .game
+                            .turn(position.clone().translate(), pos.translate());
 
-                    match state {
-                        game::TurnResult::Promotion => {
-                            self.state = State::Playing {
-                                promotion: true,
-                                check: false,
+                        match state {
+                            game::TurnResult::Promotion => {
+                                self.state = State::Playing {
+                                    promotion: true,
+                                    check: false,
+                                }
                             }
-                        }
-                        game::TurnResult::Checked => {
-                            self.state = State::Playing {
-                                promotion: false,
-                                check: true,
+                            game::TurnResult::Checked => {
+                                self.state = State::Playing {
+                                    promotion: false,
+                                    check: true,
+                                }
                             }
-                        }
-                        game::TurnResult::Moved => {
-                            self.state = State::Playing {
-                                promotion: false,
-                                check: false,
+                            game::TurnResult::Moved => {
+                                {
+                                    let mut v = self.connection.tx.lock().unwrap();
+                                    v.push(position.tbyte());
+                                    v.push(pos.tbyte());
+                                };
+                                self.state = State::Playing {
+                                    promotion: false,
+                                    check: false,
+                                }
                             }
-                        }
-                        game::TurnResult::GameEnd(_) => self.state = State::Checkmate,
-                        _ => (),
-                    };
+                            game::TurnResult::GameEnd(_) => self.state = State::Checkmate,
+                            _ => (),
+                        };
+                        //self.connection.push();
+                    }
                     self.parse();
                     self.selected = Selected::None;
                     self.help = Overlay::None;
@@ -241,12 +286,21 @@ impl event::EventHandler for MainState {
 }
 
 pub fn main() -> ggez::GameResult {
+    let args: Vec<String> = env::args().collect();
+    if (args.len() != 3) {
+        panic!("bad arg")
+    };
+    let MYCOLOR = match args[2].as_str() {
+        "0" => Color::White,
+        "1" => Color::Black,
+        _ => panic!("Bad args"),
+    };
     let resource_dir = path::PathBuf::from("./gui/src/resources");
     let cb = ggez::ContextBuilder::new("super_simple", "ggez")
         .window_setup(ggez::conf::WindowSetup::default().title("Best chess game!"))
         .window_mode(ggez::conf::WindowMode::default().dimensions(WINDOW_SIZE.0, WINDOW_SIZE.1))
         .add_resource_path(resource_dir);
     let (ctx, event_loop) = &mut cb.build()?;
-    let state = &mut MainState::new()?;
+    let state = &mut MainState::new(MYCOLOR)?;
     event::run(ctx, event_loop, state)
 }
