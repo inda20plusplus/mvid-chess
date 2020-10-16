@@ -12,14 +12,6 @@ use std::sync::{
 
 pub fn rx_handler(mut stream: TcpStream, rx:  Arc<Mutex<Vec<u8>>>) {
     loop{
-        {
-            let mut val = rx.lock().unwrap();
-            if val.len()>0{
-                if val[0] == 240{
-                    stream.write(&[3]);
-                }
-            }
-        }
         std::thread::sleep(Duration::from_millis(300));
         let mut buffer = &mut [0; 1];
         stream.read(buffer);
@@ -32,15 +24,8 @@ pub fn tx_handler(mut stream: TcpStream, tx: Arc<Mutex<Vec<u8>>>){
         std::thread::sleep(Duration::from_millis(300));
         let mut val = tx.lock().unwrap();
         if val.len() > 0{
-            stream.write(&[1, 0]);
-
             for i in 0..val.len(){ 
                 stream.write(&[val[i]]);
-            }
-            let mut buffer = &mut [0; 1];
-            stream.read(buffer);
-            if buffer[0] != 3{
-                panic!("bad return: {:?}", buffer);
             }
         }
         val.clear();

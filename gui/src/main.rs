@@ -7,6 +7,9 @@ use ggez::nalgebra as na;
 use std::path;
 mod network;
 mod screen;
+use std::env;
+
+use std::time::Duration;
 use std::sync::{Arc, Mutex};
 pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
 #[derive(Debug, Clone)]
@@ -81,9 +84,8 @@ pub enum Selected {
     Position(Position),
     None,
 }
-pub const MYCOLOR: Color = Color::Black;
 impl MainState {
-    fn new() -> ggez::GameResult<MainState> {
+    fn new(MYCOLOR:Color) -> ggez::GameResult<MainState> {
         let mut s = MainState {
             game: game::Game::new(),
             board: Board(vec![]),
@@ -94,8 +96,8 @@ impl MainState {
             },
             help: Overlay::None,
             selected: Selected::None,
-            connection: network::Connection::init(MYCOLOR),
-            my_color: MYCOLOR,
+            connection: network::Connection::init(MYCOLOR.clone()),
+            my_color: MYCOLOR.clone(),
         };
         s.parse();
         Ok(s)
@@ -180,15 +182,16 @@ fn get_element(point: &mut (f32, f32)) -> Element {
 }
 
 impl event::EventHandler for MainState {
+
     fn update(&mut self, _ctx: &mut ggez::Context) -> ggez::GameResult {
+        std::thread::sleep(Duration::from_millis(100));
         if self.my_color != self.turn {
             let mut v = self.connection.rx.lock().unwrap();
-            if v.len()>=4{
-                let mut a =  Position::fbyte(v[2]);
-                let mut b = Position::fbyte(v[3]);
+            if v.len()>=2{
+                let mut a =  Position::fbyte(v[0]);
+                let mut b = Position::fbyte(v[1]);
                 self.game.turn(a.translate(), b.translate());
                 v.clear();
-                v.push(240);
                 self.selected = Selected::None;
                 self.help = Overlay::None;
             };
@@ -284,12 +287,20 @@ impl event::EventHandler for MainState {
 }
 
 pub fn main() -> ggez::GameResult {
+    let args: Vec<String> = env::args().collect();
+    if(args.len()!=3){panic!("bad arg")};
+    let MYCOLOR=
+    match args[2].as_str(){
+        "0"=>Color::White,
+        "1"=>Color::Black,
+        _=>panic!("Bad args")
+    };
     let resource_dir = path::PathBuf::from("./gui/src/resources");
     let cb = ggez::ContextBuilder::new("super_simple", "ggez")
         .window_setup(ggez::conf::WindowSetup::default().title("Best chess game!"))
         .window_mode(ggez::conf::WindowMode::default().dimensions(WINDOW_SIZE.0, WINDOW_SIZE.1))
         .add_resource_path(resource_dir);
     let (ctx, event_loop) = &mut cb.build()?;
-    let state = &mut MainState::new()?;
+    let state = &mut MainState::new(MYCOLOR)?;
     event::run(ctx, event_loop, state)
 }
