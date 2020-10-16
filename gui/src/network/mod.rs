@@ -3,17 +3,13 @@ use std::env;
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpListener, TcpStream};
 use std::str::from_utf8;
+use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
 use std::time::Duration;
-use std::sync::{
-    Mutex,
-    Arc,
-    mpsc,
-};
 mod handler;
 pub struct Connection {
     pub tx: Arc<Mutex<Vec<u8>>>,
-    pub rx: Arc<Mutex<Vec<u8>>>
+    pub rx: Arc<Mutex<Vec<u8>>>,
 }
 impl Connection {
     pub fn init(color: Color) -> Self {
@@ -36,7 +32,7 @@ impl Connection {
                             std::thread::spawn(|| {
                                 handler::tx_handler(tx_stream, ntx);
                             });
-                            return Connection{rx, tx};
+                            return Connection { rx, tx };
                         }
                         Err(e) => {
                             panic!("Error: {}", e);
@@ -58,7 +54,7 @@ impl Connection {
                     std::thread::spawn(|| {
                         handler::tx_handler(tx_stream, ntx);
                     });
-                    return Connection {tx, rx};
+                    return Connection { tx, rx };
                 }
                 Err(e) => {
                     println!("Failed to connect: {}", e);
@@ -68,5 +64,4 @@ impl Connection {
         }
         panic!("error");
     }
-    
 }

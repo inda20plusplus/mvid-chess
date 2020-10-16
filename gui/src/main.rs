@@ -9,8 +9,8 @@ mod network;
 mod screen;
 use std::env;
 
-use std::time::Duration;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 pub const WINDOW_SIZE: (f32, f32) = (1200.0, 900.0);
 #[derive(Debug, Clone)]
 pub enum Piece {
@@ -37,11 +37,11 @@ pub enum Overlay {
     },
     None,
 }
-fn to_byte(a:u8, b:u8)->u8{
-    a*8+b
+fn to_byte(a: u8, b: u8) -> u8 {
+    a * 8 + b
 }
-fn from_byte(c:u8)->(u8,u8){
-   (c/8, c%8)
+fn from_byte(c: u8) -> (u8, u8) {
+    (c / 8, c % 8)
 }
 #[derive(Debug, Clone, Copy)]
 pub struct Position(usize, usize);
@@ -53,10 +53,10 @@ impl Position {
         Position((pos.0 - 1) as usize, (pos.1 - 1) as usize)
     }
     pub fn tbyte(&self) -> u8 {
-        (self.0*8+self.1) as u8 
+        (self.0 * 8 + self.1) as u8
     }
     pub fn fbyte(c: u8) -> Self {
-        Position((c/8) as usize, (c%8) as usize)
+        Position((c / 8) as usize, (c % 8) as usize)
     }
 }
 pub struct Board(Vec<(Piece, Position)>);
@@ -67,7 +67,7 @@ pub enum Color {
     None,
 }
 pub struct StatePtr {
-    pub state: Arc<Mutex<MainState>>
+    pub state: Arc<Mutex<MainState>>,
 }
 pub struct MainState {
     pub game: game::Game,
@@ -85,7 +85,7 @@ pub enum Selected {
     None,
 }
 impl MainState {
-    fn new(MYCOLOR:Color) -> ggez::GameResult<MainState> {
+    fn new(MYCOLOR: Color) -> ggez::GameResult<MainState> {
         let mut s = MainState {
             game: game::Game::new(),
             board: Board(vec![]),
@@ -182,13 +182,12 @@ fn get_element(point: &mut (f32, f32)) -> Element {
 }
 
 impl event::EventHandler for MainState {
-
     fn update(&mut self, _ctx: &mut ggez::Context) -> ggez::GameResult {
         std::thread::sleep(Duration::from_millis(100));
         if self.my_color != self.turn {
             let mut v = self.connection.rx.lock().unwrap();
-            if v.len()>=2{
-                let mut a =  Position::fbyte(v[0]);
+            if v.len() >= 2 {
+                let mut a = Position::fbyte(v[0]);
                 let mut b = Position::fbyte(v[1]);
                 self.game.turn(a.translate(), b.translate());
                 v.clear();
@@ -288,12 +287,13 @@ impl event::EventHandler for MainState {
 
 pub fn main() -> ggez::GameResult {
     let args: Vec<String> = env::args().collect();
-    if(args.len()!=3){panic!("bad arg")};
-    let MYCOLOR=
-    match args[2].as_str(){
-        "0"=>Color::White,
-        "1"=>Color::Black,
-        _=>panic!("Bad args")
+    if (args.len() != 3) {
+        panic!("bad arg")
+    };
+    let MYCOLOR = match args[2].as_str() {
+        "0" => Color::White,
+        "1" => Color::Black,
+        _ => panic!("Bad args"),
     };
     let resource_dir = path::PathBuf::from("./gui/src/resources");
     let cb = ggez::ContextBuilder::new("super_simple", "ggez")
